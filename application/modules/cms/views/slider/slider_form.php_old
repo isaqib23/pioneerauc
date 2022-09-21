@@ -1,0 +1,295 @@
+<style type="text/css">
+    #page-wrapper {
+        margin-top: 100px;
+    }
+</style>
+
+<div class="clearfix"></div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+  <div class="x_panel">
+    <div class="x_title">
+        <h2>
+            <?php echo $small_title; ?>
+        </h2>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <div id="result"></div>  
+      <?php 
+      if(isset($slider_info) && !empty($slider_info)) {
+        $smal_title = json_decode($slider_info[0]['small_title']);
+        $title = json_decode($slider_info[0]['title']);
+        // print_r($title);die();
+        $description = json_decode($slider_info[0]['description']);
+      }
+      ?>
+      <form method="post" novalidate="" id="demo-form" enctype="multipart/form-data" class="form-horizontal form-label-left">
+        <input type="hidden" name="<?= $this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+         <?php if(isset($slider_info) && !empty($slider_info)){ ?>
+          <input type="hidden" name="id" value="<?php echo $this->uri->segment(3); ?>">
+        <?php } ?>  
+          <div class="item form-group">    
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="english_heading"> Small Title English 
+                <span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text"   id="english_heading" required="required" name="small_english_heading" value="<?php if(isset($smal_title) && !empty($smal_title)) { echo $smal_title->english; } ?>" class="form-control col-md-7 col-xs-12">
+            </div>
+          </div>
+          <div class="item form-group">    
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="small_arabic_title">Small Title Arabic 
+                  <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="text" dir="rtl" id="small_arabic_title" required="required" name="small_arabic_title" value="<?php if(isset($smal_title) && !empty($smal_title)) { echo $smal_title->arabic; } ?>" class="form-control col-md-7 col-xs-12">
+              </div>
+          </div>
+           
+          <div class="item form-group">    
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="english_title">Title English
+                  <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="text"   id="english_title" required="required" name="english_title" value="<?php if(isset($title) && !empty($title)) { echo $title->english; } ?>" class="form-control col-md-7 col-xs-12">
+              </div>
+          </div>
+          <div class="item form-group">    
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="arabic_title">Title Arabic 
+                  <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="text" dir="rtl" id="arabic_title" required="required" name="arabic_title" value="<?php if(isset($title) && !empty($title)) { echo $title->arabic; } ?>" class="form-control col-md-7 col-xs-12">
+              </div>
+          </div>
+
+          <div class="item form-group">    
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="link">Button Link 
+                  <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="text" id="link" required="required" name="link" value="<?php if(isset($slider_info) && !empty($slider_info)) { echo $slider_info[0]['link']; } ?>" class="form-control col-md-7 col-xs-12">
+              </div>
+          </div>
+
+          <div class="item form-group">    
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="sort_order">Sort Order 
+                  <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="text" id="sort_order" required="required" name="sort_order" value="<?php if(isset($slider_info) && !empty($slider_info)) { echo $slider_info[0]['sort_order']; } ?>" class="form-control col-md-7 col-xs-12">
+              </div>
+          </div>
+
+           <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="category_id">Slider Category <span class="required">*</span></label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <select class="form-control col-md-7 col-xs-12" id="category_id" name="category_id" >
+                         <option >Select Category</option>
+                         <?php foreach ($sliderCategory as $sliderCategorys) { 
+                            $categoryTitle = json_decode($sliderCategorys['title']);
+                            ?>
+                        <option 
+                        <?php if(isset($slider_info) && !empty($slider_info)){
+                            if($slider_info[0]['category_id'] == $sliderCategorys['id']){ echo 'selected';}
+                        }?>
+                            value="<?php echo $sliderCategorys['id']; ?>"><?php echo $categoryTitle->english; ?></option>
+                            <?php  } ?> 
+                          
+                    </select>
+                </div>
+                </div>
+
+          <div class="item form-group">    
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="status">status 
+                  <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                  <select class="form-control col-md-7 col-xs-12" name="status">
+                    <option value="active" <?php if(isset($slider_info) && ($slider_info[0]['status'] == 'active')) { echo "selected"; } ?>>Active</option>
+                    <option value="inactive" <?php if(isset($slider_info) && ($slider_info[0]['status'] == 'inactive')) { echo "selected"; } ?>>Inactive</option>
+                  </select>
+              </div>
+          </div>
+
+          <div class="item form-group">    
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="start_date">Start Date Time <span class="required">*</span>
+            </label>
+
+            <div class="col-md-6 col-sm-6 col-xs-12  ">
+              <div class='input-group date' id='start_date'>
+                <input type="text" readonly class="form-control" name="start_date" placeholder="From" value="<?php if(isset($slider_info) && !empty($slider_info)) { echo date('Y-m-d H:i A',strtotime($slider_info[0]['start_date'])); } ?>" required />
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+          </div>  
+
+          <div class="item form-group">    
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="end_date">Expiry Date Time <span class="required">*</span>
+            </label>
+
+            <div class="col-md-6 col-sm-6 col-xs-12  ">
+              <div class='input-group date' id='end_date'>
+                <input type="text" readonly class="form-control" name="end_date" placeholder="To" value="<?php if(isset($slider_info) && !empty($slider_info)) { echo date('Y-m-d H:i A',strtotime($slider_info[0]['end_date'])); } ?>" required />
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+          </div>  
+
+          <div class="item form-group">    
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="english_description">Description English <span class="required">*</span>
+              </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                      <textarea class="form-control col-md-7 col-xs-12 desc_english"  name="english_description" id="english_description" ><?php if(isset($description) && !empty($description)){ echo $description->english; }?></textarea> 
+                      <span class="text-danger english_description-error"></span> 
+                  </div>
+              <input type="hidden" name="english_description" id="texteditor">
+          </div>
+          <div class="item form-group">
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="arabic_description">Description Arabic<span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                  <textarea class="form-control col-md-7 col-xs-12 desc_arabic"  name="arabic_description" id="arabic_description"><?php if(isset($description) && !empty($description)) { echo $description->arabic;
+                } ?></textarea>
+                <span class="text-danger arabic_description-error"></span>
+              </div>
+              <input type="hidden" name="arabic_description" id="texteditor2">
+          </div>
+
+          <div class="item form-group">    
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="image">Slider Image
+                  <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="file"   id="image" name="image">
+               
+                  <?php if(isset($slider_info)){
+
+               $pfile = $this->db->get_where('files', ['id' => $slider_info[0]['image']])->row_array(); 
+                  ?>
+
+                      <input type="hidden" name="p_old_file" value="<?= $pfile['name']; ?>">
+                      <img src="<?= base_url($pfile['path'] . $pfile['name']); ?>" height="72" width="72" style="margin-top: 15px">
+                      <!-- <img src="<?= base_url().$pfile['path'].$pfile['name'];?>"> -->
+                  <?php } ?>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+              <input type="submit" class="btn btn-success" value="<?php echo (isset($slider_info) && !empty($slider_info)) ? 'Update' : 'Submit'; ?>" />  
+              <a href="<?php echo base_url().'cms/slider/'; ?>" class="custom-class" type="button"> 
+                Cancel
+              </a>
+              </div>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<script type="text/javascript">
+
+  $(function () { 
+    $('#start_date').datetimepicker({ 
+        maxDate: "<?php if(isset($slider_info) && !empty($slider_info)) { echo date('Y-m-d H:i',strtotime($slider_info[0]['end_date'])); }else{ echo date('Y-m-d H:i', strtotime('+2 month'));} ?>",
+        minDate: "<?php if(isset($slider_info) && !empty($slider_info)) { echo date('Y-m-d H:i',strtotime($slider_info[0]['start_date'])); }else{ echo date('Y-m-d H:i');}  ?>",
+        format: 'YYYY-MM-DD HH:mm',
+        <?php if(isset($slider_info) && !empty($slider_info)) { ?>
+        useCurrent: false, //Important! See issue #1075 
+        <?php }?>
+        ignoreReadonly : true
+    });
+    $('#end_date').datetimepicker({
+        useCurrent: false, //Important! See issue #1075 
+        minDate: "<?php if(isset($slider_info) && !empty($slider_info)) { echo date('Y-m-d H:i',strtotime($slider_info[0]['start_date'])); }else{ echo date('Y-m-d H:i');} ?>",
+       format: 'YYYY-MM-DD HH:mm',
+        ignoreReadonly : true
+       
+    });
+    $("#start_date").on("dp.change", function (e) {
+        $('#end_date').data("DateTimePicker").minDate(e.date);
+    });
+    $("#end_date").on("dp.change", function (e) {
+        $('#start_date').data("DateTimePicker").maxDate(e.date);
+    });
+  });
+
+
+    var base_url = '<?php echo base_url();?>';
+    // var formaction_path = '<?php echo (isset($slider_info) && !empty($slider_info)) ? 'edit' : 'add';?>';
+    var formaction_path = '<?php echo $formaction_path; ?>';
+    // alert(formaction_path);
+    $(document).ready(function() {
+         // You can use the locally-scoped $ in here as an alias to jQuery.
+        $('#demo-form').parsley().on('field:validated', function() {
+            var ok = $('.parsley-error').length === 0;
+          }) .on('form:submit', function() {
+            var content1 = tinymce.get("english_description").getContent();
+            $("#texteditor").val(content1);
+            var content2 = tinymce.get("arabic_description").getContent();
+            $("#texteditor2").val(content2);
+
+
+             var formData = new FormData($("#demo-form")[0]);
+            $.ajax({
+                url: base_url + 'cms/' + formaction_path,
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success : function(data) {
+                var objData = jQuery.parseJSON(data);
+                console.log(objData);
+                   if (objData.error == false) { 
+                    window.location = base_url + 'cms/slider';
+                    } 
+                    else 
+                    {
+                    $('.msg-alert').css('display', 'block');
+                    $("#result").html('<div class="alert" ><div class="alert alert-domain alert-success alert-dismissible fade in  msg-alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="color: black"><span aria-hidden="true">×</span> </button>' + objData.msg + '</div></div>');
+                    }  
+                }
+
+            });
+            return false; // Don't submit form for this demo
+          });
+  
+    });
+</script>
+
+<script type="text/javascript">
+
+    tinymce.init({
+        selector: '.desc_english',
+        height: 350,
+        theme: 'modern',
+        menubar: false,
+        branding: false,
+        plugins: [
+            'autolink lists link',
+        ],
+    });
+
+    tinymce.init({
+        selector: '.desc_arabic',
+        height: 350,
+        theme: 'modern',
+        menubar: false,
+        branding: false,
+        //language: 'ar',
+        directionality: 'rtl',
+        plugins: [
+            'autolink lists link',
+        ],
+    });
+</script>
+
+
+
+

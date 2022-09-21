@@ -1,0 +1,1712 @@
+
+<style type="text/css">
+.switchonoff {
+    display: flex;
+    width: 100%;
+    margin: 12px 0;
+    align-items: center;
+}
+.switchonoff span {
+    color: #000;
+    padding-left: 10px;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    margin: 0;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border: 1px solid #ccc;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: #7c2dca;
+}
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 0px;
+    bottom: 0px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border: 1px solid #ccc;
+}
+    .social.top.active {
+      transform: scale(1) translateY(-10px);
+    }
+    .social.active {
+      opacity: 1;
+      transition: all 0.4s ease 0s;
+      visibility: visible;
+    }
+    .social.networks-5 {
+
+    }
+    .social.top {
+      margin-top: 0px;
+      transform-origin: 0 0 0;
+    }
+    .social {
+      margin-left: -20%;
+      opacity: 0;
+      transition: all 0.4s ease 0s;
+      visibility: hidden;
+    }
+    .networks-5{
+        position: absolute;
+        margin: 0;
+        right: 18px;
+        top: -1%;
+        z-index: 5 !important;
+    }
+    @media screen and (max-width: 1000px) {
+        .networks-5 {
+            right: auto;
+            top: auto;
+            bottom: 70px;
+            transform: translateX(-50%) !important;
+            left: 50%;
+        }
+    }
+
+button.plus {
+    color: #5c03b5;
+    font-size: 22px;
+    height: 30px;
+    line-height: 30px;
+    display: inline-block;
+    width: 30px;
+    vertical-align: sub;
+}
+button.minus {
+    color: #5c03b5;
+    font-size: 30px;
+    height: 30px;
+    display: inline-block;
+    width: 30px;
+    line-height: 18px;
+    vertical-align: sub;
+}
+</style>
+<?php
+$biding_limit = 0;
+$id = $this->uri->segment(5);
+$auctionId = $this->uri->segment(4);
+$min = $this->db->get_where('auction_items',['item_id'=>$id, 'auction_id' => $auctionId])->row_array();
+
+$bid_end_time = strtotime($item['bid_end_time']);
+$item_images_ids = explode(',', $item['item_images']);
+$images = $this->db->where_in('id', $item_images_ids)->order_by('file_order', 'ASC')->get('files')->result_array();
+if($images){
+    $image_src = base_url('uploads/items_documents/').$item['id'].'/'.$images[0]['name'];
+}else{
+    $image_src = '';
+}
+
+$favorite = 'fa-heart-o';
+if($this->session->userdata('logged_in')){
+    $user = $this->session->userdata('logged_in');
+    $favt = $this->db->get_where('favorites_items', ['item_id' => $item['id'],'user_id' => $user->id])->row_array();
+    if($favt){
+        $favorite = 'fa-heart';
+    }else{
+        $favorite = 'fa-heart-o';
+    }
+} else {
+    // echo "login to continue";
+}
+
+if($this->session->userdata('logged_in')) {                    
+    $is_logged_in = $this->session->userdata('logged_in');
+}else{
+    $is_logged_in = NULL;
+}
+?>
+
+<script>
+    var shareTitle = '';
+    var shareImage = '';
+    var shareDescription = '';
+    $(document).ready(function(){
+        $("#start_bid").attr('disabled',true);
+        $("#btn-toggle").on("click", function(){
+            $(".auto-biding > ul").slideToggle();
+        });
+        shareTitle = '<?= addslashes(json_decode($item['item_name'])->english); ?>';
+        shareImage = '<?= $image_src; ?>';
+        shareDescription = '<?= addslashes(json_decode($item['item_detail'])->english); ?>';
+    });
+</script>
+
+
+<!-- PNotify -->
+<link href="<?php echo base_url(); ?>assets_admin/vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+<link href="<?php echo base_url(); ?>assets_admin/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+<link href="<?php echo base_url(); ?>assets_admin/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="<?php echo base_url();?>assets_admin/sweetalert/dist/sweetalert.css">
+
+
+
+<div class="main-wrapper vehicles">
+    <div class="container">
+        <a href="javascript:void(0)" onclick="goBack()" class="back-link">
+            <span class="material-icons">
+                chevron_left
+            </span>
+            <?= $this->lang->line('back_to_result');?>
+        </a>
+        <div class="description-listing">
+            <h1 class="page-title"><?php $item_name = json_decode($item['item_name']); echo strtoupper($item_name->$language);?></h1>
+            <ul class="item-stats d-flex align-items-center">
+                <li>
+                    <span><?= $this->lang->line('lot');?> # </span>
+                        <?= $item['order_lot_no']; ?> 
+                </li>
+                <li> 
+                    <span><?= $this->lang->line('sale_location');?>: </span>
+                    <b><?= $item['item_location']; ?> </b>
+                </li>
+                <li> 
+                    <span><?= $this->lang->line('end_date');?>: </span>
+                    <?php 
+                    if($language == 'arabic'){
+                        $fmt = datefmt_create("ar_AE", IntlDateFormatter::LONG, IntlDateFormatter::MEDIUM, 'Asia/Dubai', IntlDateFormatter::GREGORIAN);
+                        echo datefmt_format( $fmt , $bid_end_time);
+                    }else{
+                        echo date('D, M d, Y' ,$bid_end_time) ?> - <?= date('h:i A' ,$bid_end_time); 
+                    }
+                    ?>
+                </li>
+            </ul>
+            <div class="inner-listing">
+                <div class="left-side">
+                    <div class="detail-slider">
+                        <div class="bg-black">
+                            <ul class="action-links flex justify-content-end pr-3 mb-4">
+                                <?php 
+                                    $fav= 'favorite_border';
+                                    if ($language == 'english') {
+                                        $favText = 'Add to wishlist';
+                                    }else{
+                                        $favText = 'أضف إلى قائمة الامنيات';
+                                    }
+                                    if(isset($fav_item) && !empty($fav_item)){
+                                        $fav = 'favorite';
+                                        if ($language == 'english') {
+                                            $favText = 'Added to wishlist';
+                                        }else{
+                                            $favText = 'أضيف لقائمة الأماني';
+                                        }
+                                    }
+                                ?>
+                                <li class="add_to_wishlist">
+                                    <a href="javascript:void(0)" id="fav_id" data-item="<?= $item['id'];?>" onclick="doFavt(this)">
+                                        <span class="material-icons">
+                                            <?= $fav ?>
+                                        </span>
+                                        <qa class="favText"><?= $favText; ?></qa>
+                                    </a>
+                                </li>
+                                <li class="share">
+                                    <a href="javascript:void(0)" class="share-btn">
+                                        <span class="material-icons">
+                                            share
+                                        </span>
+                                        <?= $this->lang->line('share');?>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="social top center networks-5" id="my-inline-buttons"></div>
+                            <script>
+                                $( document ).ready(function() {
+                                    //custom button for homepage
+                                    $( ".share-btn" ).click(function(e) {
+                                        e.preventDefault();
+                                        console.log('share me');
+                                        $('.networks-5').not($(".networks-5" )).each(function(){
+                                            $(this).removeClass("active");
+                                        });
+                                        $( ".networks-5" ).toggleClass( "active" );
+                                    });   
+                                });
+                            </script>
+                            <div class="slider-for">
+                                <?php 
+                                if ($images):
+                                    foreach ($images as $key => $value): ?>
+                                        <div class="img">
+                                            <img onclick="sliderRefresh()" data-toggle="modal" data-target="#imgModal" src="<?= base_url('uploads/items_documents/').$item['id'].'/'.$value['name']; ?>">
+                                        </div>
+                                    <?php endforeach; 
+                                else: ?>
+                                    <img data-toggle="modal" onclick="sliderRefresh()" data-target="#imgModal" src="<?= base_url('assets_admin/images/product-default.jpg'); ?>" alt="">
+                                <?php endif; ?>
+                            </div>
+                            <img class="full-screen" data-toggle="modal" onclick="sliderRefresh()" data-target="#imgModal" width="40" src="<?= NEW_ASSETS_USER; ?>/new/images/full-screen-selector.svg">
+                        </div>
+                        <div class="slider-nav">
+                            <?php foreach ($images as $key => $value): ?>
+                                <div class="img">
+                                    <img src="<?= base_url('uploads/items_documents/').$item['id'].'/'.$value['name']; ?>">
+                                </div>
+                            <?php endforeach; ?>
+                        </div>    
+                    </div>
+                </div>
+                <div class="right-side">
+                    <?php      
+                    $user_have_bid = $this->db->get_where('bid', ['auction_id' => $auction_id,'user_id' => $user_id,'item_id' => $item_id]); ?>
+                    <?php if ($min['sold_status'] == 'not') : ?>
+                        <div class="bid-detail">
+                            <p> <?= $this->lang->line('current_bid');?>:
+                                <b id="CBP" class="<?= $item['item_id']; ?>"><?= (isset($heighest_bid_data) && !empty($heighest_bid_data['current_bid'])) ? number_format($heighest_bid_data['current_bid'] , 0, ".", ",") : number_format($item['bid_start_price'] , 0, ".", ","); ?> <?= $this->lang->line('aed'); ?>
+                                </b>
+                            </p>
+                            <p> <?= $this->lang->line('min_increment');?>:
+                                <span><?= number_format($item['minimum_bid_price'] , 0, ".", ","); ?> <?= $this->lang->line('aed'); ?></span>
+                            </p>
+                            <span style="color: #5C02B5;" class="big-bid" id="bid_user_name<?= $item['item_id']; ?>">
+                                <?php 
+                                if ($user_have_bid->num_rows() > 0) { ?>
+                                    <?php 
+                                    if (isset($heighest_bid_data) && !empty($heighest_bid_data) && $this->session->userdata('logged_in'))  {
+                                        if($heighest_bid_data['user_id'] == $user_id) {
+                                            /*echo '<h style="color:green"><?= $this->lang->line("higher_bider");?>.</h>'; */
+                                            $higher = '<h style="color: #5C02B5 !important;">'.$this->lang->line('higher_bider').'</h>';
+                                            echo $higher;
+                                            
+                                        }else{
+                                            $not_higher = '<h style="color: #FA8500;">'.$this->lang->line('not_higher_bider');
+                                            echo $not_higher;        
+                                        } 
+                                    }
+                                    ?>
+                                <?php } ?>
+                            </span>
+                        </div>
+                        <div class="time-remaining">
+                            <ul class="d-flex justify-content-between align-items-center">
+                                <li>
+    								<?= $this->lang->line('time_remaining_for_bid');?>:
+                                    <b> 
+                                    <?php 
+                                    $endTime = $bid_end_time;
+                                    if($language == 'arabic'){
+                                        $fmt = datefmt_create("ar_AE", IntlDateFormatter::LONG, IntlDateFormatter::MEDIUM, 'Asia/Dubai', IntlDateFormatter::GREGORIAN);
+                                        echo datefmt_format( $fmt , $bid_end_time);
+                                    }else{
+                                        echo date('jS M Y', $bid_end_time); 
+                                    }
+
+                                    $endObj = new DateTime(date('Y-m-d H:i:s', $bid_end_time));
+                                    $now = new DateTime();
+
+                                    $diff = $endObj->diff($now);
+
+                                    $days = $diff->format('%a');
+                                    $hours = $diff->format('%h');
+                                    $showTime = ' %a d %h hrs';
+                                    if($days == '0' && $hours == '0'){
+                                        $showTime = '- %i '.$this->lang->line('minute');
+                                    }else{
+                                        $showTime = '- %a '.$this->lang->line('d').' %h '.$this->lang->line('hrs');
+                                    }
+                                    echo $diff->format($showTime);
+                                    ?>
+                                    </b>
+                                </li>
+                                <li>
+                                    <img src="<?= NEW_ASSETS_USER; ?>/new/images/clock-circle-o.png">
+                                 </li>
+                            </ul>
+                        </div>
+                        <?php if($is_logged_in): ?>
+                            <div class="your-bid">
+                                <div id="hideText" class="hideText<?= $item['item_id']; ?>"></div>
+                                <?php 
+                                $deposit_by_user = false;
+                                if($item['security'] == 'yes'){
+                                    $user = $this->session->userdata('logged_in');
+                                    $user_deposit = $this->db->get_where('auction_item_deposits', [
+                                        'user_id' => $user->id,
+                                        'item_id' => $item['item_id'],
+                                        'auction_id' => $item['auction_id'],
+                                        'auction_item_id' => $item['auction_item_id']
+                                    ]);
+                                    //echo $this->db->last_query();
+                                    if($user_deposit->num_rows() > 0){
+                                        $user_deposit = $user_deposit->row_array();
+                                        if($user_deposit['deposit'] >= $item['deposit']){
+                                            $deposit_by_user = true;
+                                        }else{
+                                            $deposit_by_user = false;
+                                        }
+                                    }else{
+                                        $deposit_by_user = false;
+                                    }
+                                }else{
+                                    $deposit_by_user = true;
+                                } 
+
+                                if($deposit_by_user == true):
+                                ?>
+
+                                 <?php
+                                  $crrnt = (isset($heighest_bid_data) && !empty($heighest_bid_data['current_bid'])) ? $heighest_bid_data['current_bid'] : $item['bid_start_price'];
+
+
+                                $minBid = number_format($item['minimum_bid_price']);
+                                 ?> 
+                                 <input type="hidden" name="crrnt" id="crrnt" value="<?= $crrnt;?>">
+                                 <input type="hidden" name="minBid" id="minBid" value="<?= $minBid;?>">
+                            
+
+
+                                    <div class="your-bid bid-div<?= $item['item_id']; ?>" id="hidebid_section">
+                                        <h4><?= $this->lang->line('your_bid');?>:</h4>
+                                        <div class="form-group bid-items">
+                                            <input type="hidden" name="current_price" id="current_price<?= $item['item_id']; ?>" value="<?= (isset($heighest_bid_data) && !empty($heighest_bid_data['current_bid'])) ? $heighest_bid_data['current_bid'] : $item['bid_start_price']; ?>">
+                                            <!-- <label><?= $this->lang->line('direct_offer');?>:</label> -->
+                                            <!-- <input type="number" min="0" step="100" id="bid_amount" name="bid_amount" placeholder="<?= $this->lang->line('place_direct_offer');?>" class="bid_amount_" value="<?php echo ($crrnt+$minBid);?>" > -->
+
+
+                                                <p class="paddinflft0" data-increment="<?php echo $minBid;?>" data-max="<?= (float)$balance*10; ?>" data-price="<?php echo ($crrnt+$minBid);?>">
+                                                    <input class="quantity" type="hidden" value='0' readonly>
+                                                    <button  class="minus">-</button>
+                                                    <input readonly type="number" min="0" step="100" id="bid_amount" name="bid_amount" placeholder="<?= $this->lang->line('place_direct_offer');?>" class="total bid_amount_" value="<?php echo ($crrnt+$minBid);?>" >
+
+                                                    <button class="plus">+</button>
+
+                                                </p>
+
+
+                                            <button 
+                                                onclick="placebid(this)" 
+                                                data-auction-id="<?= $item['auction_id']; ?>" 
+                                                data-item-id="<?= $item['item_id']; ?>" 
+                                                data-seller-id="<?= $item['item_seller_id']; ?>" 
+                                                data-min-bid="<?= $item['minimum_bid_price']; ?>" 
+                                                data-lot-no="<?= $item['lot_no']; ?>" 
+                                                data-start-price="<?= $item['bid_start_price']; ?>" 
+                                                data-max-bid="<?= (float)$balance*10; ?>" id="bid_btn" class="btn btn-primary smplce"><?= $this->lang->line('place_bid');?>
+                                            </button>
+                                        </div>
+                                        <!-- <p>
+                                            <img src="<?= NEW_ASSETS_USER; ?>/new/images/error-popup.png">
+                                           
+                                        </p> -->
+                                        <!-- <div class="form-group bid-items">
+                                            <ul class="aed-buttons">
+                                                <li>
+                                                    
+                                                    <button type="button" class="btn-counter bidder-button" onclick="bidButtons(this)" value="100">AED 100</button>
+                                                </li>
+                                                <li>
+                                                    
+                                                    <button type="button" class="btn-counter bidder-button" onclick="bidButtons(this)" value="500">AED 500</button>
+                                                </li>
+                                                <li>
+                                                    <button type="button" class="btn-counter bidder-button" onclick="bidButtons(this)" value="1000">AED 1000</button>
+                                                </li>
+                                                <li>
+                                                    <button type="button" class="btn-counter bidder-button" onclick="bidButtons(this)" value="2000">AED 2000</button>
+                                                </li>
+                                            </ul>
+                                        </div> -->
+                                       
+                                        <div class="switchonoff">
+                                            <label class="switch">
+                                                <!-- <input onclick="autoBiding(this)"  id="auto_limit"  name="auto_limit" value="<?php echo ($crrnt+$minBid);?>" type="checkbox"> -->
+
+                                                 <input id="_auto_bid"  name="_auto_bid" value="1" type="checkbox" >
+
+                                                <span class="slider round"></span>
+                                            </label>
+                                            <span>Switch on auto bidding for this.</span>
+                                        </div>
+                                        <p>
+                                            <img src="<?= NEW_ASSETS_USER; ?>/new/images/error-popup.png">
+                                            <?= $this->lang->line('place_max_amount');?>
+                                        </p>
+                                        <div class="button-row">
+                                            
+                                            
+                                        </div>
+                                    </div>  
+                                <?php endif; ?>
+                                <?php if($item['security'] == 'yes' && !empty($item['deposit']) && $deposit_by_user == false): 
+                                    ?>
+                                    <div class="report">
+                                        <h2 class="form-title"><?= $this->lang->line('deposit'); ?></h2>
+                                        <ul>
+                                            <li>
+                                                <p class="toltip"><?= $this->lang->line('item_required_extra_deposit'); ?> <?= $item['deposit']; ?></p>
+                                            </li>
+                                            <li>
+                                                <a class="btn btn-default" href="<?= base_url('customer/item_deposit?item_id=').$item['auction_item_id'].'&auction_id='.$item['auction_id'].'&rurl='.$rurl; ?>" class="file-link" ><?= $this->lang->line('deposit_now'); ?></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($balance == 0): ?>
+                                   <!--  <ul class="h-list deposit-links">
+                                        <li>
+                                            <h4><?//= $this->lang->line('deposit_text');?>.</h4>
+                                        </li>
+                                        <li>
+                                            <?//= $this->lang->line('you_need_make_security_deposit'); ?><br> </br>
+                                            <?php 
+                                            // $redirect = (isset($_GET['r'])) ? urldecode($_GET['r']) : array();
+                                            // if(!empty($redirect)){
+                                            //     $redirect = json_decode($redirect);
+                                            // }
+                                            // array_push($redirect,$_SERVER['REQUEST_URI']);
+                                            // $json_redirect = json_encode($redirect);
+                                            // $json_redirect = urlencode($json_redirect);
+                                            // print_r($json_redirect);die('jhsdvfjsd ');
+                                            ?>
+                                            <a href="<?//= base_url('/customer/deposit?'); ?>" class="btn btn-default sm" ><?//= $this->lang->line('pay_deposit');?></a>
+                                        
+                                        </li>
+                                    </ul>
+                                    <script>
+                                        $("#no-deposit").model('show');
+                                    </script> -->
+                                <?php endif; ?>
+                            </div>
+                            <?php $biding_limit = $balance*10; ?>
+                        <?php else: ?>
+                            <?php $biding_limit = 0; ?>
+                            <div class="bid-now">
+                                <!-- <p><?//= $this->lang->line('available_for_live_auction');?></p> -->
+                                <p>
+                                    <a href="javascript:void(0)" data-toggle="modal" data-target="#loginModal"><?= $this->lang->line('login_or_register');?></a>
+    								<?= $this->lang->line('now_to_start_bidding');?>
+                                </p>
+                                <a href="javascript:void(0)" data-toggle="modal" data-target="#loginModal" class="btn btn-primary"><?= $this->lang->line('bid_now');?>!</a>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="inner-listing">
+                <div class="left-side">
+                    <ul class="detail-icons">
+                        <?php if (($category['include_make_model'] == 'yes') && isset($item['mileage'])) : ?>
+                        <li>
+                            <h4><?= $this->lang->line('cond_report');?></h4>
+                            <img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/driving-test-icons.svg">
+                            <p><?= ($item['inspected']=='yes')?$this->lang->line('available'):$this->lang->line('not_available');?></p>
+                        </li>
+                        <?php endif; ?>
+                        <?php if (($category['include_make_model'] == 'yes')) : ?>
+                            <li>
+                                <h4><?= $this->lang->line('odometer');?></h4>
+                                <img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/odometer-icons.svg">
+                                <p><?= number_format($item['mileage']); ?></p>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (($category['include_make_model'] == 'yes') && isset($item['specification'])) : ?>
+                            <li>
+                                <h4><?= $this->lang->line('specifications');?></h4>
+                                <img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/specification-icons.svg">
+                                   <?php 
+                                        if ($language == 'english') {
+                                            if ($item['specification'] == 'GCC') {
+                                                $specsType = 'GCC';
+                                            }else{
+                                                $specsType = 'IMPORTED';
+                                            }
+                                        }else{
+                                            if ($item['specification'] == 'GCC') {
+                                                $specsType = 'خليجية';
+                                            }else{
+                                                $specsType = 'وارد';
+                                            }
+                                        }
+                                    ?>
+                                <p><?= $specsType; ?></p>
+                            </li>
+                        <?php endif; ?>
+                        <!-- <li>
+                            <h4>Color</h4>
+                            <img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/color-icons.svg">
+                            <p>Black</p>
+                        </li> -->
+
+                        <?php if (($category['include_make_model'] == 'yes')) : ?>
+                        <li>
+                            <h4><?= $this->lang->line('year');?></h4>
+                            <img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/year-icons.svg">
+                            <p><?= $item['year'] ?></p>
+                        </li>
+                        <?php endif; ?>
+
+                        <?php if (($category['include_make_model'] == 'yes')) : ?>
+                        <li>
+                            <h4><?= $this->lang->line('vat');?></h4>
+                            <img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/vat-icons.svg">
+                            <p><?= $this->lang->line('applicable');?></p>
+                        </li>
+                        <?php endif; ?>
+                    </ul>
+                    <div class="detail-desc">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true"><?= $this->lang->line('details');?></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false"><?= $this->lang->line('description');?></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false"><?= $this->lang->line('terms_and_conditions');?></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="enquiry-tab" data-toggle="tab" href="#enquiry" role="tab" aria-controls="enquiry" aria-selected="false"><?= $this->lang->line('enquiry');?></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <?php $j=11;
+                                if ($category['include_make_model'] && ! empty($item['item_model'])) { 
+                                    $j=9;
+                                    $model = $this->db->get_where('item_models', ['id' => $item['item_model']])->row_array(); 
+                                    $make = $this->db->get_where('item_makes', ['id' => $item['item_make']])->row_array(); 
+                                    $specs = $this->db->get_where('item', ['id' => $item['id']])->row_array(); 
+                                    ?>
+                                    <ul>
+                                        <li><?= $this->lang->line('make');?></li>
+                                        <li><?php if(!empty($make['title'])){echo json_decode($make['title'])->$language; } ?></li>
+                                    </ul>
+                                    <ul>
+                                        <li><?= $this->lang->line('model');?></li>
+                                        <li><?php if(!empty($model['title'])){echo json_decode($model['title'])->$language;}; ?></li>
+                                    </ul>
+                                <?php } ?>
+                                <ul>
+                                    <li><?= $this->lang->line('vin_number');?></li>
+                                    <li><?= $item['item_vin_number']; ?></li>
+                                </ul>
+                                <?php 
+                                $i=0; 
+                                foreach ($fields as $key => $value) { 
+                                    if (!empty($value['data-value'])) {
+                                        $i++;
+                                        if($i<= $j) { ?>
+                                            <ul>
+                                                <li><?= $this->template->make_dual($value['label']); ?></li>
+                                                <li><?= $this->template->make_dual($value['data-value']); ?></li>
+                                            </ul>
+                                            <?php 
+                                        } 
+                                    } 
+                                }
+                                ?>
+                                <div class="button-row report-btn">
+                                    <ul>
+                                        <?php if (($category['include_make_model'] == 'yes') && ($item['inspected']=='yes')) : ?>
+                                            <li>
+                                                <a href="<?= base_url('inspection_report/').$item['id']; ?>" class="btn-primary" target="_blank"><?= $this->lang->line('cond_report');?></a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php $f = 0;
+                                        if (!empty($item['item_test_report'])) {
+                                            $doc_ids = explode(',', $item['item_test_report']);
+                                            $item_test_report = $this->db->where_in('id', $doc_ids)->get('files')->result_array();
+                                            foreach ($item_test_report as $key1 => $document) { $f++;
+                                            ?>
+                                                <li>
+                                                    <a href="<?= base_url().$document['path'].$document['name']; ?>" class="btn-primary" download><?php $path_parts = pathinfo($document['orignal_name']);
+                                                echo $path_parts['filename']; ?></a>
+                                                </li>
+                                        <?php } } ?>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                <!-- <ul>
+                                    <li>Make</li>
+                                    <li>NISSAN</li>
+                                </ul> -->
+                                <ul>
+                                    <li>
+                                        <?php
+                                        $item_detail = json_decode($item['item_detail']);
+                                        $detail_points = explode(',', $item_detail->$language);
+
+                                        foreach ($detail_points as $key => $value) {
+                                          ?>
+                                            
+                                                <span><?= $value; ?></span>
+                                          <?php
+                                        }
+                                        ?>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                <ul>
+                                    <li><?= json_decode($item['terms'])->$language; ?></li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="enquiry" role="tabpanel" aria-labelledby="enquiry-tab">
+                                <ul>
+                                    <li><?= $this->lang->line('inquire_further');?></li>
+                                </ul>
+                                <ul>
+                                    <li><?= $this->lang->line('enquire');?></li>
+                                    <li><?= $contact['phone']; ?></a></li>
+                                </ul>
+                                <ul>
+                                    <li><?= $this->lang->line('terms_and_conditions');?></li>
+                                    <li class="terms-purple"><a href="<?= base_url('terms-conditions'); ?>"><?= $this->lang->line('sales_info_terms');?></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-side">
+                    <div class="google-map">
+                        <ul class="flex justify-content-between">
+                            <li>
+								<?= $this->lang->line('lot_location');?>
+                            </li>
+                            <li>
+                                <a href="https://www.google.com/maps/@<?= $item['item_lat']; ?>,<?= $item['item_lng']; ?>,15z" target="_blank"><?= $this->lang->line('open_google_maps');?></a>
+                            </li>
+                        </ul>
+                        <div class="map">
+                            <div dir="ltr" id="map" style="width: 100%; height: 100%;"></div> 
+                            <script src="<?php echo base_url(); ?>assets_admin/js/jquery.geocomplete.js"></script>
+                            <!-- <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13594.266313237882!2d74.3000874!3d31.590931400000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1612689739457!5m2!1sen!2s" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe> -->
+                        </div>
+                    </div>
+                    <!-- <div class="add-space">
+						<?= $this->lang->line('ad_space');?>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <div class="similar-vehicles">
+            <?php
+            if (!empty($related_items)) : ?>
+                <h2 class="page-title"><?= $this->lang->line('similar'); ?> <?= json_decode($category['title'])->$language;?></h2>
+                <div class="products">
+                    <div class="customer-logos">
+                        <?php
+                        foreach ($related_items as $key => $related_item) :
+                            $bid_end_time = strtotime($related_item['bid_end_time']);
+                            $bid_info = $this->db->where('item_id',$related_item['item_id'])->where('auction_id',$related_item['auction_id'])->order_by('id', 'desc')->from('bid')->get()->row_array();
+                            $visit_count = $this->db->where('item_id',$related_item['item_id'])->where('auction_id',$related_item['auction_id'])->from('online_auction_item_visits')->count_all_results();
+                            $related_item_bids_count = $this->db->where('item_id',$related_item['item_id'])->where('auction_id',$related_item['auction_id'])->from('bid')->count_all_results();
+                            $item_images_ids = explode(',', $related_item['item_images']);
+                            $rel_images = $this->db->where_in('id', $item_images_ids)->get('files')->row_array();
+                            ?>
+                            <div class="slide">
+                                <div class="col-xl-12">
+                                    <div class="product">
+                                        <div class="body">
+                                            <?php $time= $related_item['bid_end_time'];
+                                            $date = date('Y-m-d H:i:s');
+                                            if ($time > $date) {
+                                                $url = base_url('auction/online-auction/details/').$related_item['auction_id'].'/'.$related_item['item_id'];
+                                            } else {
+                                                $url = "javascript:void(0)";
+                                            } ?>
+                                            <a href="<?= $url; ?>">
+                                                <?php if ($rel_images) { ?>
+                                                    <div class="image background-cover" style="background-image: url(<?= base_url('uploads/items_documents/').$related_item['item_id'].'/'.$rel_images['name']; ?>);" >
+                                                        <span class="tag"><?= $this->lang->line('original_price'); ?> <?= (!empty($bid_info)) ? number_format($bid_info['bid_amount']) : number_format($related_item['bid_start_price']); ?></span>
+                                                    </div>
+                                                <?php } else { ?>
+                                                    <div class="image background-cover" style="background-image: url(<?= base_url('assets_admin/images/product-default.jpg'); ?>);" >
+                                                        <span class="tag"><?= $this->lang->line('original_price'); ?> <?= (!empty($bid_info)) ? number_format($bid_info['bid_amount']) : number_format($related_item['bid_start_price']); ?></span>
+                                                    </div>
+                                                <?php } ?>
+                                                <h3>
+                                                    <?= json_decode($related_item['item_name'])->$language; ?>
+                                                        
+                                                </h3>
+                                            </a>
+                                            <p class="text-truncate"><?= json_decode($related_item['item_detail'])->$language; ?></p>
+                                        </div>
+                                        <div class="footer">
+                                            <ul class="h-list justify-content-between" >
+                                                <?php if($category['include_make_model'] == 'yes'): ?>
+                                                    <li class="d-flex align-items-center">
+                                                        <svg width="32" height="14" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M13.2783 5.29102H15.4117V6.35793H13.2783V5.29102Z" fill="#9F9F9F"/>
+                                                            <path d="M31.4883 3.69576L27.8653 3.17836C27.2046 2.77252 26.519 2.40921 25.8122 2.0904C23.4778 1.03303 20.9442 0.487424 18.3813 0.490245H17.7519C14.7274 0.492416 11.7513 1.25137 9.09487 2.69786L7.2664 3.69533C5.12606 3.71942 3.02696 4.28868 1.16746 5.34865C0.411762 5.78206 -0.0548502 6.58615 -0.0561523 7.45709V10.6242C-0.0561523 10.9189 0.182579 11.1576 0.477305 11.1576H2.26823C2.85073 12.8194 4.67008 13.6945 6.33187 13.112C7.24665 12.7914 7.96567 12.0722 8.28622 11.1576H22.5363C23.1188 12.8194 24.9382 13.6945 26.6 13.112C27.5145 12.7914 28.2338 12.0722 28.5543 11.1576H28.7457C28.8137 11.1576 28.881 11.1448 28.9441 11.1197L30.6717 10.4265C31.4434 10.1209 31.9489 9.37389 31.9461 8.54419V4.22379C31.9461 3.95858 31.7509 3.73352 31.4883 3.69576ZM7.36775 10.5176C7.13184 11.672 6.00481 12.4166 4.85044 12.1807C3.69584 11.9448 2.95122 10.8178 3.18713 9.66319C3.42325 8.50881 4.55028 7.76419 5.70466 8.0001C6.698 8.20302 7.41116 9.07699 7.41094 10.091C7.41094 10.2342 7.3964 10.3772 7.36775 10.5176ZM17.0116 10.091H8.47764C8.47764 8.32347 7.04503 6.89064 5.27755 6.89064C3.51007 6.89064 2.07724 8.32347 2.07724 10.091H1.01054V7.45709C1.0112 6.96856 1.27293 6.51735 1.69701 6.27472C3.43758 5.28094 5.4069 4.7579 7.41094 4.75725H17.0116V10.091ZM17.0116 3.69055H9.50288L9.60575 3.63434C11.8861 2.39511 14.419 1.69259 17.0116 1.58038V3.69055ZM18.0783 1.55694H18.3802C20.5297 1.55455 22.6596 1.96257 24.6561 2.75928L23.7248 3.69055H18.0783V1.55694ZM27.6359 10.5176C27.4 11.672 26.2729 12.4166 25.1183 12.1807C23.9639 11.9448 23.2193 10.8178 23.4552 9.66319C23.6911 8.50881 24.8184 7.76419 25.9728 8.0001C26.9661 8.20302 27.6793 9.07699 27.6791 10.091C27.6791 10.2342 27.6645 10.3772 27.6359 10.5176ZM30.8794 5.29049H29.2792V6.3574H30.8794V8.54419C30.8807 8.93723 30.6411 9.29098 30.2756 9.43531L28.7457 10.0497C28.7457 10.0007 28.7395 9.95205 28.7362 9.903C28.7329 9.85396 28.7319 9.79644 28.7266 9.74305C28.7212 9.68967 28.7106 9.63628 28.7021 9.5831C28.6934 9.52972 28.6871 9.47633 28.6765 9.42793C28.6659 9.37931 28.6503 9.32549 28.6364 9.27471C28.6225 9.22414 28.6118 9.17292 28.5958 9.12322C28.5799 9.07374 28.5606 9.02621 28.5426 8.97759C28.5244 8.9292 28.5079 8.87906 28.4892 8.83088C28.4706 8.78292 28.4454 8.7393 28.423 8.69394C28.4007 8.64858 28.3787 8.59888 28.3538 8.55309C28.3286 8.50729 28.3004 8.46823 28.2763 8.42569C28.2524 8.38293 28.2231 8.33432 28.1928 8.2907C28.1622 8.24686 28.1339 8.21235 28.1046 8.17285C28.0753 8.13335 28.0421 8.08691 28.0081 8.04589C27.974 8.00487 27.9421 7.97275 27.9089 7.93911C27.8759 7.90569 27.839 7.86033 27.8023 7.823C27.7654 7.78567 27.7292 7.75616 27.6925 7.72317C27.6556 7.69018 27.6161 7.65111 27.5755 7.61639C27.5352 7.58188 27.4939 7.55519 27.4536 7.5248C27.413 7.49442 27.3724 7.46186 27.3298 7.43343C27.2871 7.40522 27.2391 7.38026 27.1933 7.35031C27.1473 7.32036 27.11 7.29692 27.0668 7.27413C27.0236 7.25113 26.9698 7.22704 26.9208 7.2036C26.8717 7.18016 26.8333 7.15933 26.7879 7.14023C26.7426 7.12091 26.6812 7.10073 26.628 7.08163C26.5746 7.06231 26.5399 7.04734 26.4945 7.03301C26.4337 7.01435 26.3715 7.00089 26.3094 6.98549C26.2688 6.97594 26.2299 6.96313 26.1889 6.95467C26.1234 6.94121 26.0561 6.93383 25.9895 6.92407C25.95 6.91886 25.9122 6.91018 25.8727 6.90649C25.7659 6.89585 25.6594 6.88999 25.5474 6.88999C23.7806 6.89173 22.3488 8.32347 22.3471 10.0903H18.0786V4.75703H23.9455C24.087 4.75703 24.2226 4.70082 24.3225 4.60077L25.7056 3.21765C26.2862 3.49392 26.8507 3.80276 27.3965 4.14262C27.4594 4.18191 27.5297 4.20773 27.6033 4.21837L30.8794 4.68606V5.29049Z" fill="#9F9F9F"/>
+                                                            <?php 
+                                                            if ($language == 'english') {
+                                                                if ($related_item['specification'] == 'GCC') {
+                                                                    $specsType = 'GCC';
+                                                                }else{
+                                                                    $specsType = 'IMPORTED';
+                                                                }
+                                                            }else{
+                                                                if ($related_item['specification'] == 'GCC') {
+                                                                    $specsType = 'خليجية';
+                                                                }else{
+                                                                    $specsType = 'وارد';
+                                                                }
+                                                            } ?>
+                                                        </svg> <?= $specsType; ?>
+                                                    </li>
+                                                    <li class="d-flex align-items-center">
+                                                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 1.88086H19.8125C20.7453 1.88086 21.5 2.63555 21.5 3.56836V19.6934C21.5 20.6238 20.7453 21.3809 19.8125 21.3809H2.1875C1.25469 21.3809 0.5 20.6262 0.5 19.6934V3.56836C0.5 2.63555 1.25469 1.88086 2.1875 1.88086H5V1.22461C5 0.758203 5.37734 0.380859 5.84375 0.380859C6.31016 0.380859 6.6875 0.758203 6.6875 1.22461V1.88086H15.3125V1.22461C15.3125 0.758203 15.6898 0.380859 16.1562 0.380859C16.6227 0.380859 17 0.758203 17 1.22461V1.88086ZM5 3.56836H2.1875V6.19336H19.8125V3.56836H17V4.03711C17 4.50352 16.6227 4.88086 16.1562 4.88086C15.6898 4.88086 15.3125 4.50352 15.3125 4.03711V3.56836H6.6875V4.03711C6.6875 4.50352 6.31016 4.88086 5.84375 4.88086C5.37734 4.88086 5 4.50352 5 4.03711V3.56836ZM19.8125 19.6934H2.1875V7.88086H19.8125V19.6934ZM7.25 10.8809H5.75C5.33516 10.8809 5 11.216 5 11.6309C5 12.0457 5.33516 12.3809 5.75 12.3809H7.25C7.66484 12.3809 8 12.0457 8 11.6309C8 11.216 7.66484 10.8809 7.25 10.8809ZM10.25 10.8809H11.75C12.1648 10.8809 12.5 11.216 12.5 11.6309C12.5 12.0457 12.1648 12.3809 11.75 12.3809H10.25C9.83516 12.3809 9.5 12.0457 9.5 11.6309C9.5 11.216 9.83516 10.8809 10.25 10.8809ZM16.25 10.8809H14.75C14.3352 10.8809 14 11.216 14 11.6309C14 12.0457 14.3352 12.3809 14.75 12.3809H16.25C16.6648 12.3809 17 12.0457 17 11.6309C17 11.216 16.6648 10.8809 16.25 10.8809ZM5.75 15.4277H7.25C7.66484 15.4277 8 15.7629 8 16.1777C8 16.5926 7.66484 16.9277 7.25 16.9277H5.75C5.33516 16.9277 5 16.5926 5 16.1777C5 15.7629 5.33516 15.4277 5.75 15.4277ZM11.75 15.4277H10.25C9.83516 15.4277 9.5 15.7629 9.5 16.1777C9.5 16.5926 9.83516 16.9277 10.25 16.9277H11.75C12.1648 16.9277 12.5 16.5926 12.5 16.1777C12.5 15.7629 12.1648 15.4277 11.75 15.4277Z" fill="#9F9F9F"/>
+                                                    </svg>
+                                                    <?= $related_item['year']; ?></li>
+                                                    <li class="d-flex align-items-center">
+                                                        <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M12.4768 15.3418H8.52295C8.18318 15.3418 7.90771 15.6173 7.90771 15.957C7.90771 16.2968 8.18318 16.5723 8.52295 16.5723H12.4768C12.8166 16.5723 13.0921 16.2968 13.0921 15.957C13.0921 15.6173 12.8166 15.3418 12.4768 15.3418Z" fill="#9F9F9F"/>
+                                                            <path d="M12.2308 11.5461C12.36 11.2869 12.433 10.9948 12.433 10.6855C12.433 9.61813 11.5677 8.75287 10.5004 8.75287C10.191 8.75287 9.89885 8.82596 9.63959 8.9552L6.74167 6.05716C6.50144 5.81689 6.11188 5.81689 5.87161 6.05716C5.63134 6.29738 5.63134 6.68691 5.87161 6.92722L8.76973 9.82547C8.64074 10.0845 8.56781 10.3764 8.56781 10.6855C8.56781 11.7528 9.43308 12.6181 10.5004 12.6181C10.8096 12.6181 11.1015 12.5451 11.3606 12.4161L12.0423 13.0979C12.2826 13.3382 12.6721 13.3382 12.9124 13.098C13.1527 12.8577 13.1527 12.4682 12.9124 12.2279L12.2308 11.5461ZM10.5004 11.3876C10.1132 11.3876 9.79824 11.0727 9.79824 10.6855C9.79824 10.2984 10.1132 9.98338 10.5004 9.98338C10.8876 9.98338 11.2025 10.2984 11.2025 10.6855C11.2025 11.0727 10.8875 11.3876 10.5004 11.3876Z" fill="#9F9F9F"/>
+                                                            <path d="M10.5 0.185547C4.71028 0.185547 0 4.89582 0 10.6855C0 12.5308 0.486527 14.3465 1.40704 15.9362C1.57709 16.2299 1.95288 16.3304 2.24679 16.1608C2.24692 16.1608 3.95924 15.1723 3.95924 15.1723C4.25348 15.0024 4.3543 14.6262 4.18441 14.3319C4.01453 14.0376 3.63833 13.9367 3.344 14.1067L2.18195 14.7776C1.64817 13.6939 1.33215 12.5109 1.25171 11.3008H2.59219C2.93196 11.3008 3.20742 11.0254 3.20742 10.6856C3.20742 10.3458 2.93196 10.0704 2.59219 10.0704H1.25139C1.33309 8.82979 1.65978 7.65523 2.18371 6.59457L3.34404 7.26447C3.63837 7.43448 4.01465 7.33354 4.18446 7.0393C4.35434 6.74501 4.25353 6.36873 3.95928 6.19889L2.80038 5.52976C3.47488 4.52578 4.34027 3.66039 5.34425 2.98589L6.0133 4.14466C6.18319 4.43895 6.55946 4.53985 6.85371 4.36984C7.14796 4.19991 7.24877 3.82367 7.07889 3.52943L6.40902 2.36922C7.46968 1.84533 8.64429 1.51884 9.88477 1.43702V2.77778C9.88477 3.11755 10.1602 3.39301 10.5 3.39301C10.8398 3.39301 11.1152 3.11755 11.1152 2.77778V1.43702C12.3557 1.51884 13.5303 1.84537 14.591 2.36922L13.9211 3.52943C13.7512 3.82367 13.852 4.19995 14.1463 4.36984C14.4405 4.53985 14.8168 4.43895 14.9867 4.14466L15.6557 2.98589C16.6597 3.66035 17.5252 4.52574 18.1996 5.52976L17.0408 6.19881C16.7465 6.36869 16.6457 6.74493 16.8156 7.03922C16.9854 7.33346 17.3617 7.4344 17.656 7.26439L18.8163 6.59448C19.3402 7.65515 19.667 8.82971 19.7487 10.0703H18.4078C18.068 10.0703 17.7926 10.3457 17.7926 10.6855C17.7926 11.0253 18.068 11.3007 18.4078 11.3007H19.7483C19.6679 12.5108 19.3518 13.6938 18.8181 14.7775L17.656 14.1066C17.3617 13.9366 16.9855 14.0375 16.8156 14.3318C16.6457 14.6261 16.7465 15.0024 17.0408 15.1722C17.0408 15.1722 18.7531 16.1607 18.7532 16.1608C19.0472 16.3303 19.4229 16.2299 19.593 15.9362C20.5135 14.3465 21 12.5309 21 10.6855C21 4.89582 16.2897 0.185547 10.5 0.185547Z" fill="#9F9F9F"/>
+                                                        </svg>
+                                                        <?php 
+                                                        if ($language == 'english') {
+                                                            if ($related_item['mileage_type'] == 'km') {
+                                                                $mileageType = 'Km';
+                                                            }else{
+                                                                $mileageType = 'miles';
+                                                            }
+                                                        }else{
+                                                            if ($related_item['mileage_type'] == 'km') {
+                                                                $mileageType = ' كيلومتر ';
+                                                            }else{
+                                                                $mileageType = ' ميل ';
+                                                            }
+                                                        } ?>
+                                                        <?= number_format($related_item['mileage']).' '.$mileageType; ?>
+                                                    </li>
+                                                <?php else : ?>
+                                                    <li class="d-flex align-items-center">
+                                                        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7269 5.21836C14.9144 5.66836 15.0487 6.10117 15.0534 6.18867V6.19492V6.19805C15.0487 6.28555 14.9144 6.71836 14.7269 7.16836C14.5347 7.63242 14.2097 8.3043 13.7597 8.86523C13.1675 9.60273 12.4409 10.1918 11.6003 10.6121C10.5597 11.134 9.34873 11.398 8.00029 11.398C6.65342 11.398 5.44248 11.134 4.40029 10.6121C3.55654 10.1902 2.82998 9.60117 2.24092 8.86367C1.79248 8.3043 1.46904 7.63242 1.27529 7.16836C1.08779 6.7168 0.953418 6.28398 0.94873 6.19648V6.19336V6.19023C0.953418 6.10273 1.08623 5.66992 1.27373 5.21992C1.46592 4.75586 1.78936 4.08398 2.23936 3.52148C2.83467 2.78086 3.56123 2.19336 4.39873 1.77461C5.43467 1.2543 6.64717 0.990234 7.99873 0.990234C9.35185 0.990234 10.5644 1.25273 11.6003 1.77305C12.444 2.19492 13.1706 2.78398 13.7597 3.52148C14.2097 4.08242 14.5347 4.7543 14.7269 5.21836ZM12.8878 8.15664C13.4597 7.44414 13.805 6.46289 13.894 6.19102C13.805 5.91914 13.4581 4.93633 12.8831 4.21758C12.394 3.60508 11.794 3.11758 11.0972 2.76914C10.2206 2.32695 9.17842 2.10352 7.99873 2.10352C6.82373 2.10352 5.77998 2.32695 4.89561 2.76914C4.20029 3.11758 3.59873 3.60352 3.10811 4.21602C2.53311 4.93477 2.18623 5.91758 2.09717 6.18945C2.18623 6.46289 2.53311 7.44727 3.10811 8.16289C3.59717 8.77539 4.19717 9.26289 4.89404 9.61133C5.77686 10.0535 6.81904 10.2785 7.99404 10.2785C9.16748 10.2785 10.2112 10.0535 11.094 9.61133C11.7925 9.25977 12.394 8.77383 12.88 8.16445L12.8878 8.15664ZM7.99932 3.4707C6.50557 3.4707 5.2915 4.68633 5.2915 6.17852C5.2915 7.6707 6.50713 8.88633 7.99932 8.88633C9.4915 8.88633 10.7071 7.6707 10.7071 6.17852C10.7071 4.68633 9.49307 3.4707 7.99932 3.4707ZM9.12607 7.3082C9.42764 7.00664 9.59326 6.60664 9.59326 6.18164C9.59326 5.75664 9.42764 5.35664 9.12607 5.05508C8.82451 4.75352 8.42451 4.58789 7.99951 4.58789C7.57451 4.58789 7.17451 4.75352 6.87295 5.05508C6.57139 5.35664 6.40576 5.75664 6.40576 6.18164C6.40576 6.60664 6.57139 7.00664 6.87295 7.3082C7.17451 7.60977 7.57451 7.77539 7.99951 7.77539C8.42451 7.77539 8.82451 7.60977 9.12607 7.3082Z" fill="black"/>
+                                                        </svg> <?= $visit_count; ?> <?= $this->lang->line('views');?>
+                                                    </li>
+                                                    <li class="d-flex align-items-center">
+                                                        <a href="<?= $url; ?>"><?= $this->lang->line('view_details');?></a>
+                                                    </li>
+                                                    <li class="d-flex align-items-center">
+                                                        <a href="<?= $url; ?>"><?= $this->lang->line('bid_now');?></a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+
+<!-- You are placing AED 10,000 Increment. -->
+<div class="modal fade login-modal style-2" id="PlacingAutoBid" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <button type="button" class="close _bidCancelled" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="increment-modal">
+                  <div class="img">
+                      <img src="<?= NEW_ASSETS_USER; ?>/new/images/hammer-icon.png">
+                  </div>
+                  <h3>You are placing an Auto Bid for AED <span class="incrementAmount"> 10,000 </span> </h3>
+                  <p class="totalAmount"></p>
+
+
+                
+
+
+                  <p><?= $this->lang->line('would_you_like_to_continue');?><span>?</span></p>
+                  <div class="row">
+                      <div class="col-6 pr-0">
+                          <button data-dismiss="modal" class="btn btn-default _bidCancelled">
+                            <?= $this->lang->line('cancel');?></button>
+                      </div>
+                      <div class="col-6 pr-0">
+                          <button class="btn btn-primary" onclick="autobidconfirm()"><?= $this->lang->line('confirm');?></button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- You are placing AED 10,000 Increment. -->
+<div class="modal fade login-modal style-2" id="PlacingBid" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="increment-modal">
+                  <div class="img">
+                      <img src="<?= NEW_ASSETS_USER; ?>/new/images/hammer-icon.png">
+                  </div>
+                  <h3><?=$this->lang->line('you_are_placing_aed');?> <span class="incrementAmount"> 10,000 </span> <?= $this->lang->line('increment');?></h3>
+                  <p class="totalAmount"></p>
+                  <p><?= $this->lang->line('would_you_like_to_continue');?><span>?</span></p>
+                  <div class="row">
+                      <div class="col-6 pr-0">
+                          <button data-dismiss="modal" class="btn btn-default"><?= $this->lang->line('cancel');?></button>
+                      </div>
+                      <div class="col-6 pr-0">
+                          <button class="btn btn-primary" onclick="bidconfirm()"><?= $this->lang->line('confirm');?></button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- You are placing AED 10,000 Increment. -->
+<div class="modal fade login-modal style-2" id="enough-balance" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="increment-modal">
+                  <div class="img">
+                      <img src="<?= NEW_ASSETS_USER; ?>/new/images/error-popup.png">
+                  </div>
+                  <h3><?= $this->lang->line('dont_have_enough_balance');?></h3>
+                  <p id="deposit_txt"><?= $this->lang->line('deposite_more_money');?>?</p>
+                  <div class="button-row">
+                      <a href="<?= base_url('customer/deposit'); ?>" class="btn btn-primary"><?= $this->lang->line('take_me_to_the_payments');?></a>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+</div>
+<!-- /*Success incremnet */ -->
+
+
+<div class="modal fade login-modal style-2" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-body success">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="increment-modal">
+                  <div class="img">
+                      <img src="<?= NEW_ASSETS_USER; ?>/new/images/hammer-icon.png">
+                  </div>
+                  <h3><?= $this->lang->line('succrss_bid_text');?> <span class="bidSuccessAmount"> 10,000 </span> <?= $this->lang->line('increment_small');?>.</h3>
+                  <div class="button-row">
+                      <button class="btn btn-primary"  id ="confirmBid" onclick="bidsuccess()"><?= $this->lang->line('ok');?></button>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+</div>
+
+
+<!-- fail to place bid model -->
+<div class="modal fade login-modal style-2" id="tryAgainModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-body success">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="increment-modal">
+                  <div class="img">
+                      <img src="<?= NEW_ASSETS_USER; ?>/new/images/hammer-icon.png">
+                  </div>
+                  <h3><?= $this->lang->line('bid_not_placed_try_again');?> </h3>
+                  <div class="button-row">
+                      <button class="btn btn-primary"  id ="confirmBid" onclick="tryModal()"><?= $this->lang->line('ok');?></button>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+</div>
+<!-- Slider image modal -->
+
+<div class="modal fade login-modal style-2 image-modal" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body show-img">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="img-modal detail-slider">
+                    
+                    <div class="slider-for-img">
+                        <?php 
+                        if ($images):
+                            foreach ($images as $key => $img_value): ?>
+                                <div class="img">
+                                    <img src="<?= base_url('uploads/items_documents/').$item['id'].'/'.$img_value['name']; ?>">
+                                </div>
+                            <?php endforeach; 
+                        else: ?>
+                            <img src="<?= base_url('assets_admin/images/product-default.jpg'); ?>" alt="">
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- no deposit model -->
+<div class="modal" id="no-deposit">
+    <div class="modal-dialog alert-box">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert-modal">
+                    <img src="<?= NEW_ASSETS_USER; ?>/new/images/alert-icon.png" alt="">
+                    <div class="alert-detail">
+                        <h1><?= $this->lang->line('dont_enogh_balance');?></h1>
+                        <p><?= $this->lang->line('would_you_like_deposit');?></p>
+                    </div>
+                    <a href="<?= base_url('/customer/deposit'); ?>" class="btn-primary" ><?= $this->lang->line('take_me_to_the_payments'); ?></a>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="<?php echo base_url(); ?>assets_admin/vendors/pnotify/dist/pnotify.js"></script>
+<script src="<?php echo base_url(); ?>assets_admin/vendors/pnotify/dist/pnotify.buttons.js"></script>
+<script src="<?php echo base_url(); ?>assets_admin/vendors/pnotify/dist/pnotify.nonblock.js"></script>
+<script src="https://js.pusher.com/6.0/pusher.min.js"></script>
+
+<script>
+    // load the buttons
+
+    function sliderRefresh(){
+        $('.show-img .slider-for-img')[0].slick.refresh()
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+
+    var token_name = '<?= $this->security->get_csrf_token_name();?>';
+    var token_value = '<?=$this->security->get_csrf_hash();?>';
+
+    $('#bid_help').on('click',function(){
+        var increment = "<?= $item['minimum_bid_price']; ?>"
+        swal("<?= $this->lang->line('what_is_auto_biding');?> ("+increment+") <?= $this->lang->line('what_is_auto_biding_text');?>");
+        });
+
+    $(document).ready(function(){
+        $('#eye').tooltip({
+             title:'users visit this item!',
+             placement:'bottom'
+        });
+        
+        $('.fa-heart-o').tooltip({
+             title:'<?=$this->lang->line('fav');?>!',
+             placement:'bottom'
+        });
+
+        $('.fa-heart').tooltip({
+             title:'<?=$this->lang->line('r_fav');?>!',
+             placement:'bottom'
+        });
+
+        var hidebtn ="<?= isset($hide_auto_bid['auto_status']) ? $hide_auto_bid['auto_status'] : ''; ?>";
+        //console.log(hidebtn);
+        if(hidebtn == "start"){
+            //console.log('start if ', hidebtn);
+           // $('#hidebid_section').hide();
+            $('.bid-div<?= $item['item_id']; ?>').hide();
+           // $('#bid_amount').prop("readonly",true);
+           var incText = "<?= ($min['minimum_bid_price']) ? $min['minimum_bid_price'] : 0; ?>";
+           
+           $('#hideText').html('<div class="bid-now"><p><?= $this->lang->line('you_have_started_auto_bidding'); ?> <?= $this->lang->line('aed'); ?> '+incText+' </p></div>');
+           // $('#hide_lable').hide();
+           // $('#hideA').hide();
+       }else{
+            //console.log('else ', hidebtn);
+            // $('#hidebid_section').show();
+            $('#autohide').show();
+            $('.bid-div<?= $item['item_id']; ?>').show();
+
+            $('#hideText').hide(); 
+            $('#hide_lable').show();  
+            $('#hideA').show();
+        }
+    });
+    
+    function doFavt(e){
+        var heart = $(e);
+        var itemID = $(e).data('item');
+        var auctionId ='<?php echo $this->uri->segment(4);?>';
+        var language = '<?= $language; ?>';
+        var auctionItemid ="<?= $item['auction_item_id']; ?>";
+        $.ajax({
+            type: 'post',
+            url: '<?= base_url('auction/OnlineAuction/do_favt'); ?>',
+            data: {'item_id':itemID,'auction_id':auctionId,'auction_item_id':auctionItemid, [token_name] : token_value},
+            success: function(msg){
+                console.log(msg);
+                //var response = JSON.parse(msg);
+                if(msg == 'do_heart'){
+                    // heart.find('.fa-heart-o').addClass('fa-heart').removeClass('fa-heart-o');  
+                    heart.find('.material-icons').text("favorite"); 
+                    if (language == 'english') {
+                        heart.find('.favText').text("Added to wishlist"); 
+                    } else{
+                        heart.find('.favText').text("أضيف لقائمة الأماني"); 
+                    }
+                }
+                if(msg == 'remove_heart'){
+                    heart.find('.material-icons').text("favorite_border"); 
+                    if (language == 'english') {
+                        heart.find('.favText').text("Add to wishlist");
+                    } else{
+                        heart.find('.favText').text("أضف إلى قائمة الامنيات");
+                    }
+                }
+                if(msg == '0'){
+                    // window.location.replace('<?= base_url("home/login?rurl="); ?>'+encodeURIComponent(window.location.href));
+                    $('#loginModal').modal('show');
+                }
+            }
+        });   
+    } 
+    var lotno = '';
+    var auctionid = '';
+    var itemID = '';
+    var minimum_bid_price = '';
+    var sellerid = '';
+    var start_price = '';
+    var maximum_bid_amount = '';
+    var bid_amount = '';
+    var current_price = '';
+    var your_bid_amount = '';
+    var total_bid = '';
+    function placebid(e){
+        //alert('dona done');
+        lotno = $(e).data('lot-no');
+        heart = $(e);
+        auctionid = $(e).data('auction-id');
+        itemID = $(e).data('item-id');
+        minimum_bid_price = $(e).data('min-bid');
+        sellerid = $(e).data('seller-id');
+        start_price = $(e).data('start-price');
+        maximum_bid_amount = $(e).data('max-bid');
+        bid_amount = $('#bid_amount').val();
+        current_price = $('#current_price<?= $item['item_id']; ?>').val();
+       // your_bid_amount = Number(bid_amount) + Number(current_price);
+        your_bid_amount = Number(bid_amount);
+        if (isNaN(your_bid_amount)) {
+            your_bid_amount = 0;
+            total_bid = '';
+        }else{
+            var your_bid_amount_with_commas = numberWithCommas(your_bid_amount);
+            total_bid = "<?= $this->lang->line('bid_amount_now');?>" + your_bid_amount_with_commas;
+        }
+        $(".incrementAmount").text(numberWithCommas(bid_amount));
+        $(".bidSuccessAmount").text(numberWithCommas(bid_amount));
+        $(".totalAmount").text(total_bid);
+        $("#PlacingBid").modal('show');
+    }
+
+    function autoBiding(e){
+        //alert('dona done');
+        lotno = $(e).data('lot-no');
+        heart = $(e);
+        auctionid = $(e).data('auction-id');
+        itemID = $(e).data('item-id');
+        minimum_bid_price = $(e).data('min-bid');
+        sellerid = $(e).data('seller-id');
+        bid_amount = $('#auto_limit').val();
+        your_bid_amount = Number(bid_amount);
+        if (isNaN(your_bid_amount)) {
+            your_bid_amount = 0;
+            total_bid = '';
+        }else{
+            var your_bid_amount_with_commas = numberWithCommas(your_bid_amount);
+           // total_bid = "<?= $this->lang->line('bid_amount_now');?>" + your_bid_amount_with_commas;
+            total_bid = "The system will place minimum increment on your behalf.";
+        }
+        $(".incrementAmount").text(numberWithCommas(bid_amount));
+        $(".bidSuccessAmount").text(numberWithCommas(bid_amount));
+        $(".totalAmount").text(total_bid);
+        $("#PlacingAutoBid").modal('show');
+    }
+
+    function bidsuccess(){
+        $("#myModal").modal('hide');
+        // $("#confirmBid").modal('show');
+    }
+    function tryModal(){
+        $("#tryAgainModal").modal('hide');
+    }
+
+    function bidconfirm(){
+        //console.log('itemID :'+itemID+' auctionid :'+auctionid+' lotno :'+lotno+' sellerid :'+sellerid+' minimum_bid_price :'+minimum_bid_price+' bid_amount :'+bid_amount+' maximum_bid_amount :'+maximum_bid_amount);   
+        $("#PlacingBid").modal('hide');
+        if (bid_amount < minimum_bid_price) {
+            $("#PlacingBid").modal('hide');
+            new PNotify({
+                type: 'error',
+                text: "<?= $this->lang->line('invalid_attempt');?> <?= $this->lang->line('aed'); ?> "+minimum_bid_price,
+                styling: 'bootstrap3',
+                title: "<?= $this->lang->line('error');?>"
+            });
+        }else{
+
+            if (your_bid_amount > maximum_bid_amount) {
+                if (maximum_bid_amount == 0) {
+                    $('#deposit_txt').html('<?= $this->lang->line('deposite_money'); ?>');
+                }
+                $("#enough-balance").modal('show');
+                
+                // new PNotify({
+                //     type: 'error',
+                //     text: "<?= $this->lang->line('insufficient_balance');?>",
+                //     styling: 'bootstrap3',
+                //     title: "<?= $this->lang->line('error');?>"
+                // });
+            }else{
+                $.ajax({
+                    type: 'post',
+                    url: '<?= base_url('auction/OnlineAuction/placebid'); ?>',
+                    data: {'item_id':itemID,'auction_id':auctionid,'seller_id':sellerid,'bid_amount':bid_amount,'current_price':current_price,'start_price':start_price, [token_name] : token_value},
+                    success: function(data){
+                        console.log(data);
+                        var response = JSON.parse(data);
+                        if(response.status == 'success'){
+                            
+                            $('.current-btn p').html(response.current_bid);
+                            $('#bid_amount').val('');
+                            $('#bid_btn').attr("disabled" , "disabled");
+                            $("#myModal").modal('show');
+                        }
+
+                        if(response.status == 'bidAmountChanged'){
+                            $("#tryAgainModal").modal('show');
+                        }
+
+
+                        if(response.status == 'fail'){
+                            new PNotify({
+                                text: ""+response.msg+"",
+                                type: 'error',
+                                title: "<?= $this->lang->line('error');?>",
+                                styling: 'bootstrap3'
+                            });
+                        }
+
+                        if(data == '0'){
+                            window.location.replace('<?= base_url("home/login"); ?>');
+                        }
+                        if(response.status =='soldout'){
+                            new PNotify({
+                                text: ""+response.msg+"",
+                                type: 'info',
+                                title: "<?= $this->lang->line('info_cap');?>",
+                                styling: 'bootstrap3'
+                            });
+                            $('.your-bid').hide();
+                        }
+                    }
+                });
+            }
+        }
+        window.setTimeout(function() 
+        {
+            $(".alert").fadeTo(500, 0).slideUp(500, function()
+            {
+                $(this).remove(); 
+            });
+        }, 5000);
+    }
+
+    function initialize() {
+        var lat = "<?php echo $item['item_lat']; ?>";
+        var lng = "<?php echo $item['item_lng']; ?>";
+        var latlng = new google.maps.LatLng(lat,lng);
+        var address = "<?php echo $item['item_location']; ?>";
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center:new google.maps.LatLng(lat,lng),
+            zoom: 13
+        });
+        
+        var marker = new google.maps.Marker({
+            map: map,
+            position: latlng,
+            draggable: false,
+            anchorPoint: new google.maps.Point(0, -29)
+        });
+        var infowindow = new google.maps.InfoWindow();   
+        google.maps.event.addListener(marker, 'click', function() {
+          var iwContent = '<div id="iw_container">' +
+          '<div class="iw_title"><b>Location</b> : '+ address +' </div></div>';
+          // including content to the infowindow
+          infowindow.setContent(iwContent);
+          // opening the infowindow in the current map and at the current marker location
+          infowindow.open(map, marker);
+        });
+    }
+
+    function bidButtons(id) {
+        var x = $(id).val();
+        var y = '<?= $item['minimum_bid_price'] ?>';
+        var z = $('#bid_amount').val();
+        if(!z){
+            z=0;
+        }
+        $("#bid_amount").val(Number(z) + Number(x));
+        let bid = $('#bid_amount').val();
+
+        if(bid != '' && bid >= Number(y)){
+            $('#bid_btn').removeAttr("disabled");
+        }else{
+            $('#bid_btn').attr("disabled" , "disabled");
+        }
+    }
+
+    $(document).on("input" , "#bid_amount" , function(){
+        var y = '<?= $item['minimum_bid_price'] ?>';
+        let bid = $('#bid_amount').val();
+        if(bid != '' && bid >= Number(y)){
+            $('#bid_btn').removeAttr("disabled");
+        }else{
+            $('#bid_btn').attr("disabled" , "disabled");
+        }
+    });
+
+    $(document).on("input" , "#auto_limit" , function(){
+        var cbp = $('#current_price<?= $item['item_id']; ?>').val();
+        let bids = $('#auto_limit').val();
+
+        if(bids != '' && bids > Number(cbp)){
+            $('#start_bid').removeAttr("disabled");
+        }else{
+            $('#start_bid').attr("disabled" , "disabled");
+        }
+    });
+
+    // $(document).on("input" , "#bid_amount" , function(){
+    //     let bid_button = $('#bid_amount').val();
+
+    //     if(bid_button != ''){
+    //         $('#bid_btn').removeAttr("disabled");
+    //     }else{
+    //         $('#bid_btn').attr("disabled" , "disabled");
+    //     }
+    // });
+
+    function autobidconfirm(e) {
+
+
+       // $("#PlacingBid").modal('show');
+
+        var cbp = $('#current_price<?= $item['item_id']; ?>').val();
+        var item = "<?= $item['item_id']; ?>";
+        var loginUser = "<?= ($user) ? $user->username : ''; ?>";
+        var limit = "<?= $biding_limit; ?>";
+        
+        var auctionItem_id ="<?= $item['auction_item_id']; ?>";
+        var auction = "<?= $item['auction_id']; ?>";
+      //  var bids = $('#auto_limit').val();
+        var bids = $('#bid_amount').val();
+        var increment = "<?= $item['minimum_bid_price']; ?>";
+        var start_price = "$item['bid_start_price']; ?>";
+        var sellerid = "<?= $item['item_seller_id']; ?>";
+
+        if(bids != ''  && bids > Number(cbp)){
+         //   $('#start_bid').removeAttr("disabled");
+            if ( Number(limit) <= Number(bids)) {
+                swal("<?= $this->lang->line('error');?>", "<?= $this->lang->line('limit_exceeds');?>", "error");
+            }else{
+                // $('#bid_amount').val($('#auto_increment').val());
+                // $('#bid_btn').click();
+                $.ajax({
+                    type: 'post',
+                    url: "<?= base_url('auction/OnlineAuction/placebid');?>",
+                    data: {'bid_limit':bids,
+                        'bid_amount':increment, 
+                        'auction_id':auction,
+                        'item_id':item,
+                        'auction_item_id':auctionItem_id,
+                        'seller_id':sellerid,
+                        'start_price':start_price,
+                        'current_price':cbp, 
+                        [token_name] : token_value},
+
+                    success: function(data)
+                    {
+
+                        var response = JSON.parse(data);
+                        if(response.auto_bid_msg ='true') {
+                           //  swal("<?//= $this->lang->line('success');?>", "<?//= $this->lang->line('auto_bid_activated');?>", "success");
+                            window.location.reload(true);
+                            // return false;
+
+                            // $('.current-btn p').html(response.current_bid);
+                            // $('#auto_limit').val('');
+                            // $('#start_bid').attr("disabled" , "disabled");
+                            // $("#myModal").modal('show');
+
+                        }
+                        else{
+                            swal("<?= $this->lang->line('error');?>", "<?= $this->lang->line('auto_bid_activated_not');?>", "error");
+                        }
+                    }
+                });
+            }
+
+
+            // if (userId && userId == loginUser) {
+                //auto bid////=
+            // }else{
+            //  //pusher code/////
+                // $('#bid_amount').val($('#auto_increment').val());
+                // $('#bid_btn').click();
+            // }
+                //place bid
+                
+        }else{
+            swal("Error", "<?= $this->lang->line('bid_limit_should_greater_than');?> " +numberWithCommas(cbp), "error");
+            $('#start_bid').attr("disabled" , "disabled");
+        }
+    }
+
+    $('#loginBid').on('click', function(event){
+        event.preventDefault();
+
+        var validation = false;
+        var language = '<?= $language; ?>';
+        selectedInputs = ['email','password1'];
+        validation = validateFields(selectedInputs,language);
+
+        if (validation == true) {
+            var form = $(this).closest('form').serializeArray();
+
+            form[form.length] = { name: [token_name] , value: token_value};
+            $.ajax({
+                type: 'post',
+                url: '<?= base_url('home/login_process'); ?>',
+                data: form,
+                success: function(msg){
+                    console.log(msg);
+                    var response = JSON.parse(msg);
+                      
+                    if(response.error == true){
+                        $('#error-msgs').html('<div class="alert alert-danger alert-dismissible" id="valid-msgs"><button type="button" class="close" data-dismiss="alert">&times;</button>'+response.msg+'</div>');
+                    }
+
+                    if(response.msg == 'success'){
+                        var rurl = '<?= isset($_GET['rurl']) ? $_GET['rurl'] : ''; ?>';
+                        var id = '<?php echo $this->uri->segment(4);?>';
+                        var id2 = '<?php echo $this->uri->segment(5);?>';
+                        if (rurl == '') {
+                            window.location.replace('<?= base_url('auction/online-auction/details/'); ?>'+id +'/'+id2);
+                        }else{
+                            window.location.replace(rurl);
+                        }
+                    }
+                    // else {
+                    //        window.location.replace('<?= base_url('home/login/'); ?>');
+                    //    }
+                }
+            });
+        }
+    });
+
+    var user_have_bid = '<?= $user_have_bid->num_rows(); ?>';
+
+    //Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher("<?= $this->config->item('pusher_app_key'); ?>", {
+      cluster: 'ap1'
+    });
+    var user_id = "<?= isset($user) ? $user->id : ''; ?>";
+    var channel = pusher.subscribe('ci_pusher');
+    channel.bind('my-event', function(push) {
+      // alert(JSON.stringify(push));
+        if (push.status) {
+            if (user_id == push.user_id) {
+                $('.bid-div'+push.item_id).show();
+                $('.hideText'+push.item_id).hide();
+            }
+        } else {
+            var no_of_bids = parseInt($('#no_of_bids'+push.item_id).text());
+            var no_of_bids = no_of_bids + 1;
+            $('#no_of_bids'+push.item_id).html(no_of_bids);
+            $('.'+push.item_id).html('<?= $this->lang->line('aed'); ?> '+numberWithCommas(push.bid_amount));
+            $('#your-bid-amount'+push.item_id).html('<?= $this->lang->line('aed'); ?> '+numberWithCommas(push.bid_amount)+' + ');
+            
+            //show price+increment on confirm pop-up
+            your_bid_amount = Number($("#bid_amount").val()) + Number(push.bid_amount);
+            var your_bid_amount_with_commas = numberWithCommas(your_bid_amount);
+            total_bid = "<?= $this->lang->line('bid_amount_now'); ?>" + your_bid_amount_with_commas;
+            $(".totalAmount").text(total_bid);
+
+            $('#current_price'+push.item_id).val(push.bid_amount);
+            current_price = push.bid_amount;
+            if (user_id == push.user_id) {
+
+                user_have_bid = parseInt(user_have_bid) + 1;
+                $('#bid_amount').val('');
+                $('#bid_user_name'+push.item_id).html('<h style="color:#5C02B5"><?= $this->lang->line('higher_bider');?>.</h>');
+
+                // new PNotify({
+                //     text: "<?= $this->lang->line('bid_success');?>",
+                //     type: 'success',
+                //     title: "<?= $this->lang->line('success_');?>",
+                //     styling: 'bootstrap3'
+                // });
+                // $("#myModal").modal('show');
+            } else {
+                console.log('num rows: '+user_have_bid);
+                if (user_have_bid > 0) {
+                    $('#bid_user_name'+push.item_id).html('<h style="color:#FA8500"><?= $this->lang->line('not_higher_bider');?>');
+                } else {
+                    $('#bid_user_name'+push.item_id).html('');
+                }
+            }
+        }
+    });
+</script>
+
+<?php 
+if($language == 'arabic'){
+    $ln = '&region=EG&language=ar';
+}else{
+    $ln = '';
+}
+?>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?= $this->config->item('google_map_key'); ?>&callback=initialize<?= $ln; ?>"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets_admin/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+//comment
+    $(document).ready(function(){
+        window.setTimeout(function() {
+            window.__sharethis__.load('inline-share-buttons', {
+                alignment: 'left',
+                id: 'my-inline-buttons',
+                enabled: true,
+                font_size: 11,
+                padding: 8,
+                radius: 0,
+                networks: ['facebook', 'whatsapp', 'twitter', 'email'],
+                size: 32,
+                show_mobile_buttons: true,
+                spacing: 0,
+                url: "<?php //echo base_url(); ?>", // custom url
+                title: shareTitle,
+                image: shareImage, // useful for pinterest sharing buttons
+                description: shareDescription,
+                username: "PioneerAuctions" // custom @username for twitter sharing
+            });
+        }, 3000);
+    });
+
+
+
+    document
+  .querySelectorAll('button.minus')
+  .forEach(bt=>
+    {
+    bt.onclick=e=>
+      {
+      let P_parent = e.target.parentNode
+        , Inc      = parseInt(P_parent.dataset.increment)
+        , U_price  = parseFloat(P_parent.dataset.price)
+        , val      = parseInt(P_parent.querySelector('.quantity').value)
+
+      if (val > 0)
+        {
+        val -= Inc
+        P_parent.querySelector('.quantity').value = val
+      //  P_parent.querySelector('.total').textContent = '$ '+ (val + U_price)
+        P_parent.querySelector('.bid_amount_').value = (val + U_price)
+        } 
+      }
+    })
+
+document
+  .querySelectorAll('button.plus')
+  .forEach(bt=>
+    {
+    bt.onclick=e=>
+      {
+      let P_parent = e.target.parentNode
+        , Inc      = parseInt(P_parent.dataset.increment)
+        , U_price  = parseFloat(P_parent.dataset.price)
+        , Max      = parseInt(P_parent.dataset.max)
+        , val      = parseInt(P_parent.querySelector('.quantity').value)
+
+      if (val < Max)
+        {
+        val += Inc
+        P_parent.querySelector('.quantity').value = val
+      //  P_parent.querySelector('.total').textContent = '$ '+ (val + U_price)
+        P_parent.querySelector('.bid_amount_').value = (val + U_price)
+        } 
+      }
+    })
+
+</script>
+<script>
+	$(document).ready(function(){
+        $('.customer-logos').slick({
+            slidesToShow: 4,
+            slidesToScroll: 4,
+            autoplay: false,
+            autoplaySpeed: 500,
+            speed: 500,
+            arrows: false,
+            dots: false,
+            arrows: true,
+            pauseOnHover: true,
+            pauseOnFocus: true,
+            responsive: [{
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2
+                }
+            }, {
+                breakpoint: 520,
+                settings: {
+                    slidesToShow: 1
+                }
+            }]
+        });
+
+        
+    });
+
+
+    $(document).ready(function(){
+  $("._bidCancelled").click(function(){
+   $("#_auto_bid").prop('checked', false);
+  });
+
+
+  
+
+
+});
+
+ $('#_auto_bid').click(function(e){
+    // var b = $("#_auto_bid").val();
+ 
+ if ($('#_auto_bid').is(":checked"))
+{
+  console.log('ok')
+
+   //alert('dona done');
+        lotno = $(e).data('lot-no');
+        heart = $(e);
+        auctionid = $(e).data('auction-id');
+        itemID = $(e).data('item-id');
+        minimum_bid_price = $(e).data('min-bid');
+        sellerid = $(e).data('seller-id');
+        bid_amount = $('#bid_amount').val();
+        your_bid_amount = Number(bid_amount);
+        if (isNaN(your_bid_amount)) {
+            your_bid_amount = 0;
+            total_bid = '';
+        }else{
+            var your_bid_amount_with_commas = numberWithCommas(your_bid_amount);
+            total_bid = "The system will place minimum increment on your behalf.";
+        }
+        $(".incrementAmount").text(numberWithCommas(bid_amount));
+        $(".bidSuccessAmount").text(numberWithCommas(bid_amount));
+        $(".totalAmount").text(total_bid);
+        $("#PlacingAutoBid").modal('show');
+
+  
+
+
+}else{
+     console.log('oak')
+}
+
+ });
+
+</script>
+
+<!-- <script>
+//comment
+    //$(document).ready(function(){
+        window.__sharethis__.load('inline-share-buttons', {
+            alignment: 'left',
+            id: 'my-inline-buttons',
+            enabled: true,
+            font_size: 11,
+            padding: 8,
+            radius: 0,
+            networks: ['facebook', 'whatsapp', 'twitter', 'email'],
+            size: 32,
+            show_mobile_buttons: true,
+            spacing: 0,
+            url: "<?php //echo base_url(); ?>", // custom url
+            title: shareTitle,
+            image: shareImage, // useful for pinterest sharing buttons
+            description: shareDescription,
+            username: "PioneerAuctions" // custom @username for twitter sharing
+        });
+    //});
+</script> -->
+
+<!-- <script src="https://platform-api.sharethis.com/js/sharethis.js#property=6034b2ec5b508c00110259bf&product=sop" async="async"></script> -->

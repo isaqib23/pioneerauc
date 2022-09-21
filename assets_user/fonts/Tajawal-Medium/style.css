@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Tajawal-Medium';
+    src:url('../fonts/Tajawal-Medium.woff') format('woff'),
+        url('../fonts/Tajawal-Medium.woff2') format('woff2'),
+        url('../fonts/Tajawal-Medium.svg#Tajawal-Medium') format('svg'),
+        url('../fonts/Tajawal-Medium.eot'),
+        url('../fonts/Tajawal-Medium.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Tajawal-Medium.ttf') format('truetype');
+
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}

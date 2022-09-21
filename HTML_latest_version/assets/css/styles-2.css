@@ -1,0 +1,386 @@
+.account-page {
+    background: #F9F9F9;
+    padding: 30px 0 0 0;
+    border-top: 1px solid #C6C6C6;
+}
+
+.account-page h2 {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.18px;
+    color: #000;
+    margin: 0 0 25px 0;
+}
+
+.account-page .faq {
+    padding-top: 72px;
+}
+
+.account-wrapper {
+    display: grid;
+    grid-gap: 15px;
+    grid-template-columns: 220px auto;
+}
+.left-col li a {
+    font-size: 16px;
+    letter-spacing: -0.18px;
+    color: #000;
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    min-height: 44px;
+    border-radius: 4px;
+}
+.left-col li a svg {
+    margin-right: 15px;
+}
+
+.left-col li.active a,
+.left-col li a:hover {
+    background:#F3F0F5;
+    color: var(--primary);
+}
+.left-col li.active a svg,
+.left-col li a:hover svg {
+    fill: var(--default);
+}
+.left-col li.active a {
+    font-weight: 600;
+} 
+
+.account-wrapper .right-col {
+    border-radius: 4px;
+    padding: 45px 55px;
+    background: #fff;
+    border: 1px solid #F2F2F2;
+    box-shadow: 0 0 10px rgba(0,0,0,.10) ;
+}
+.account-wrapper .right-col h3 {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.18px;
+    color: #000;
+    margin: 0 0 32px 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.account-wrapper .right-col h3 a {
+    color: var(--default);
+    display: inline-block;
+    margin-left: 8px;
+    line-height: 0;
+}
+
+.border-title {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.18px;
+    color: #000;
+    padding: 0 0 10px 0;
+    margin: 0 0 32px 0;
+    border-bottom: 1px solid #C6C6C6;
+}
+
+.account-form .form-group {
+    margin-bottom: 35px;
+}
+.account-form label {
+    font-size: 14px;
+    color: #000;
+    font-weight: 400;
+    letter-spacing: -0.18px;
+    display: block;
+}
+.account-form label span {
+    color: #FF5757;
+}
+.account-form .form-control,
+.account-form .bootstrap-select>.dropdown-toggle {
+    font-size: 12px;
+    color: #878787;
+    letter-spacing: -0.18px;
+    height: 32px;
+    border: 1px solid #C6C6C6;
+    padding: 7px 12px;
+    box-shadow: none;
+    background: #fff !important;
+    line-height: 18px;
+}
+.account-form .form-control:placeholder {
+    color: #878787;
+}
+
+.account-form .btn-primary {
+    font-size: 16px;
+    font-weight: 400;
+    min-width: 270px;
+    border-radius: 8px;
+}
+
+.user-photo {
+    margin-bottom: 25px;
+}
+.user-photo .image {
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--default);
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    background-color: rgba(92, 2, 181, .12);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+.user-photo .image img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-btn {
+    font-size: 12px;
+    font-weight: 500;
+    color: #000000;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+.upload-btn svg {
+    margin-right: 8px;
+}
+.upload-btn input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+.upload-btn input[type=file]::-webkit-file-upload-button {
+    cursor: pointer; 
+}
+
+
+
+.customtable {
+    width: 100%;
+    position: relative;
+}
+.customtable:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #C6C6C6;
+    border-radius: 4px;
+    z-index: ;
+}
+.customtable * {
+    outline: none !important;
+    margin: 0;
+}
+.customtable thead,
+.customtable tbody {
+    position: relative;
+    z-index: 1;
+}
+.customtable th {
+    padding: 23px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.18px;
+    color: #000;
+    border-bottom: 1px solid #C6C6C6;
+}
+.customtable th:before,
+.customtable th:after {
+    top: 50%;
+    transform: translateY(-50%);
+} 
+.customtable td {
+    padding: 15px 32px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.18px;
+    color: #000;
+}
+.customtable .date-time span {
+    display: inline-block;
+    margin-right: 16px;
+    font-weight: 400;
+}
+.customtable .item {
+    display: grid;
+    grid-gap: 16px;
+    grid-template-columns: 70px auto;
+    align-items: center;
+} 
+.customtable .item .image {
+    height: 48px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+.customtable .item .image img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.customtable .item h6 {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.18px;
+    color: #000;
+    margin: 0;   
+}
+.dataTables_wrapper label {
+    font-size: 12px;
+    font-weight: 500 !important;
+}
+.dataTables_info {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 10px 0 !important;
+}
+.dataTables_wrapper .row {
+    align-items: center;
+}
+.dataTables_wrapper .pagination {
+    padding: 10px 0 !important;
+}
+.dataTables_wrapper .pagination * {
+    font-size: 12px;
+}
+.dataTables_wrapper .pagination .page-link {
+    width: auto;
+    min-width: 32px;
+}
+
+.dataTables_wrapper .select-info {
+    display: none !important;
+}
+table.dataTable tbody>tr.selected, 
+table.dataTable tbody>tr>.selected {
+    /*background: #f2f2f2;*/
+    background: transparent;; 
+}
+table.dataTable tbody td.select-checkbox:before, 
+table.dataTable tbody th.select-checkbox:before {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    border: 1px solid #979797;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+}
+table.dataTable tr.selected td.select-checkbox:after, 
+table.dataTable tr.selected th.select-checkbox:after {
+    top: 50%;
+    transform: translateY(-50%);
+    margin: -1px 0 0 2px;
+    color: #5c02b5;
+    text-shadow: none;
+}
+
+.remove-row {
+    font-size: 12px;
+    font-weight: 500;
+    color: #000;
+    letter-spacing: -0.18px;
+    margin: 0;
+}
+.remove-row:hover {
+    color: var(--primary);
+}
+
+
+.lang-dropdown .dropdown-item {
+    font-size: 13px;
+}
+.lang-dropdown .dropdown-menu {
+    right: 0;
+    left: auto !important;
+    transform: none !important;
+    top: 100% !important;
+}
+
+.user .dropdown button {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.18px;
+    color: #000;
+    text-transform: none;
+    padding: 0;
+}
+.user .dropdown button:after {
+    display: none
+}
+.user .dropdown .image {
+    color: #FA8500;
+    font-weight: 500;
+    font-size: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50px;
+    background: rgba(92, 2, 181, .12);
+    position: relative;
+    overflow: hidden;
+    margin-right: 12px;
+    
+}
+.user .dropdown .image img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user .dropdown .name {
+    max-width: 80px;
+}
+
+.bootstrap-select .dropdown-item {
+    font-size: 14px;
+}
+
+.heading {
+    padding: 0 0 10px 0;
+    margin: 0 0 32px 0;
+    border-bottom: 1px solid #C6C6C6;
+}
+.heading .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+    width: 250px
+}
+.heading .bootstrap-select>.dropdown-toggle {
+    padding-right: 35px
+}
+.heading .bootstrap-select .dropdown-item {
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+
+.datepicker-dropdown {
+    font-size: 13px;
+}
+.datepicker td, 
+.datepicker th {
+    text-align: center;
+    width: 34px;
+    height: 30px;
+}

@@ -1,0 +1,10 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/temp
+hooks:
+  BeforeInstall:
+    - location: /var/www/html/deploy.sh
+      timeout: 300
+      runas: ubuntu

@@ -1,0 +1,481 @@
+<div class="main-wrapper vehicles">
+    <div class="container">
+        <div class="products-listing">
+            <div class="left-bar filter-respnsive">
+                <h2 class="filter-title"><?= $this->lang->line('filter');?></h2>
+                <h2 class="filter-title1"><?= $this->lang->line('filter');?></h2>
+                <div class="mobile_filter_head show-on-1000">
+                    <ul class="h-list justify-content-between">
+                        <li class="close-filter">
+                            <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.30566 8.49746L15.2775 2.53027C15.6385 2.16934 15.6385 1.58574 15.2775 1.22715C14.9166 0.866211 14.333 0.866211 13.9744 1.22715L8.0002 7.19199L2.02598 1.2248C1.66504 0.863867 1.08145 0.863867 0.722852 1.2248C0.361914 1.58574 0.361914 2.16934 0.722852 2.52793L6.69473 8.49512L0.722852 14.4646C0.361914 14.8256 0.361914 15.4092 0.722852 15.7678C0.90332 15.9482 1.14004 16.0373 1.37441 16.0373C1.61113 16.0373 1.84551 15.9482 2.02598 15.7678L8.0002 9.80059L13.9744 15.7701C14.1549 15.9506 14.3893 16.0396 14.626 16.0396C14.8627 16.0396 15.0971 15.9506 15.2775 15.7701C15.6385 15.4092 15.6385 14.8256 15.2775 14.467L9.30566 8.49746Z" fill="black"/>
+                            </svg>
+                        </li>
+                        <li>
+                            <?= $this->lang->line('filter');?>
+                        </li>
+                        <li>
+                            <a href="#" id="clear"> <?= $this->lang->line('clear');?></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="filter">
+                    <form id="filtersForm">
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                        <input type="hidden" name="categoryId" value="<?= $categoryId; ?>">
+                        <!-- <div class="form-group">
+                            <label>Condition</label>
+                            <ul class="filter-radio">
+                                <li class="radio">
+                                    <input type="radio" name="radio-group" checked>
+                                    <label for="test1">All</label>
+                                </li>
+                                <li class="radio">
+                                    <input type="radio" name="radio-group">
+                                    <label for="test1">New</label>
+                                </li>
+                                <li class="radio">
+                                    <input type="radio" name="radio-group">
+                                    <label for="test1">Used</label>
+                                </li>
+                            </ul>
+                        </div> -->
+                        <div class="form-group rtl-trans1">
+                            <label><?= $this->lang->line('search');?></label>
+                            <input type="text" 
+                                name="searchTerm" 
+                                value="<?= $searchTerm; ?>" 
+                                oninput="this.value=this.value.replace(/[^a-zA-Z0-9 ]/g,'');"
+                                maxlength="50" 
+                                placeholder="<?= $this->lang->line('search');?>..." 
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label><?= $this->lang->line('price');?></label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="text" 
+                                        name="itemPriceMin" 
+                                        oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                                        maxlength="6" 
+                                        placeholder="<?= $this->lang->line('min');?>" 
+                                        class="form-control">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" 
+                                        name="itemPriceMax" 
+                                        oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                                        maxlength="6" 
+                                        placeholder="<?= $this->lang->line('max');?>" 
+                                        class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><?= $this->lang->line('year');?></label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <select name="itemYearFrom" class="selectpicker">
+                                        <option value="" selected="selected"><?= $this->lang->line('from');?></option>
+                                        <?php $year = date('Y'); ?>
+                                        <?php for ($i=0; $i <= 50 ; $i++) { ?>
+                                            <option  value="<?= $year-$i ?>"><?= $year-$i ?></option>
+                                        <?php }; ?>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <select name="itemYearTo" class="selectpicker">
+                                        <option value="" selected="selected"><?= $this->lang->line('to');?></option>
+                                        <?php $year = date('Y'); ?>
+                                        <?php for ($i=0; $i <= 50 ; $i++) { ?>
+                                            <option  value="<?= $year-$i ?>"><?= $year-$i ?></option>
+                                        <?php }; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php if($selectedCategory['include_make_model'] == 'yes'){ ?>
+                            <?php if(isset($itemMakes) && !empty($itemMakes)){ ?>
+                            <div class="form-group rtl-trans">
+                                <label><?= $this->lang->line('make');?></label>
+                                <select name="itemMake" id="itemMake" class="selectpicker">
+                                    <option value="" selected="selected"><?= $this->lang->line('select_make');?></option>
+                                    <?php foreach ($itemMakes as $key => $itemMake) {
+                                        $title = json_decode($itemMake['title']);
+                                        ?>
+                                        <option value="<?= $itemMake['id']; ?>"><?= $title->$language; ?></option>
+                                        <?php
+                                    } ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group rtl-trans">
+                                <label><?= $this->lang->line('model');?></label>
+                                <select name="itemModel" id="itemModel" class="selectpicker">
+                                    <option value=""><?= $this->lang->line('select_model');?></option>
+                                </select>
+                            </div>
+                            <?php } ?>
+                            
+                            <div class="form-group">
+                                <label><?= $this->lang->line('odometer');?></label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <select name="milageMin" class="selectpicker" title="<?= $this->lang->line('from'); ?>">
+                                            <!-- <option value="0">To</option> -->
+                                            <option value="1000">1000</option>
+                                            <option value="2000">2000</option>
+                                            <option value="3000">3000</option>
+                                            <option value="4000">4000</option>
+                                            <option value="5000">5000</option>
+                                            <option value="5000">50000</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <select name="milageMax" class="selectpicker" title="<?= $this->lang->line('to'); ?>">
+                                            <!-- <option value="0">From</option> -->
+                                            <option value="100000">100000</option>
+                                            <option value="200000">200000</option>
+                                            <option value="300000">300000</option>
+                                            <option value="400000">400000</option>
+                                            <option value="500000">500000</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <ul class="circle-radio">
+                                    <li class="radio">
+                                        <label>
+                                            <input type='radio' name="milageType" value="km">
+                                            <span for="km"><?= $this->lang->line('km');?></span>
+                                        </label>
+                                    </li>
+                                    <li class="radio">
+                                        <label>
+                                            <input type='radio' name="milageType" value="miles" >
+                                            <span for="miles"><?= $this->lang->line('miles');?></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><?= $this->lang->line('specs');?></label>
+                                <ul class="circle-radio">
+                                    <li class="radio">
+                                        <label>
+                                            <input type="radio" name="specification" value="GCC">
+                                            <?= $this->lang->line('gcc');?>
+                                        </label>
+                                    </li>
+                                    <li class="radio">
+                                        <label>
+                                            <input type="radio" name="specification" value="IMPORTED">
+                                           <?= $this->lang->line('imported');?>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        <?php } ?>
+
+                        
+
+                        <div class="form-group rtl-trans2">
+                            <label> <?= $this->lang->line('lot');?> #</label>
+                            <input type="text" 
+                                name="itemLot" 
+                                oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                                placeholder="<?= $this->lang->line('enter_lot'); ?>" 
+                                class="form-control">
+                        </div>
+
+                        <?php if(isset($itemCategoryFields) && !empty($itemCategoryFields)){ ?>
+                        <div class="advance-filter">
+                            <h3 class="filter-down"><?= $this->lang->line('advance_filter');?></h3>
+                            <div class="toggle-filter" style="display: none;">
+
+                                <?php 
+                                    if($itemCategoryFields):
+                                            $k = 0;
+                                        foreach ($itemCategoryFields as $key => $field):
+                                            $k++;
+                                            $j = 0;
+                                            ?>
+                                            <div class="box active">
+                                                <div class="head">
+                                                    <?= $this->template->make_dual($field['label']); ?>
+                                                </div>
+                                                <div class="body">
+                                                    <ul>
+                                                        <?php 
+                                                        if(in_array($field['type'], ['select','radio-group','checkbox-group'])):
+                                                            $values = json_decode($field['values'],true);
+                                                            foreach ($values as $key => $value):
+                                                                $j++; 
+                                                                ?>
+                                                                <li class="checkbox red">
+                                                                    <label>
+                                                                        <input type="checkbox"name="fields[<?= $field['id']; ?>][]" value="<?= $value['value']; ?>">
+                                                                        <span><?= $this->template->make_dual($value['label']); ?></b></span>
+                                                                    </label>
+                                                                </li>
+                                                            <?php endforeach;
+                                                        elseif(in_array($field['type'], ['text','textarea'])):
+                                                            ?>
+                                                            <li class="checkbox red">
+                                                                <input type="<?= $field['type']; ?>" 
+                                                                    id="<?= $field['id']; ?>" 
+                                                                    name="fields[<?= $field['id']; ?>]"
+                                                                    placeholder="<?= $this->template->make_dual($field['placeholder']); ?>"
+                                                                    oninput="this.value=this.value.replace(/[^a-zA-Z0-9. ]/g,'');"
+                                                                    maxlength="50" 
+                                                                    class="form-control"
+                                                                    >
+                                                            </li>
+                                                        <?php endif; ?>
+                                                    </ul>
+                                                    <?php 
+                                                    if(in_array($field['type'], ['select','radio-group','checkbox-group']) && $j > 6): ?>
+                                                        <a href="#" class="view-link"><?= $this->lang->line('view_more');?></a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>  
+                                        <?php endforeach;
+                                    endif;
+                                    ?>
+                            </div>
+                        </div>
+                        <?php } ?>
+
+                        <div class="button-row">
+                            <button type="button" id="applyFilter" class="btn btn-primary"><?= $this->lang->line('apply_filter');?></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="right-bar">
+
+                <?php if($this->session->flashdata('error')){ ?>
+                  <div class="alert alert-danger alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>Error!</strong> <?= $this->session->flashdata('error'); ?>
+                  </div>
+                <?php } ?>
+
+                <?php if($this->session->flashdata('success')){ ?>
+                  <div class="alert alert-success alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>Success!</strong> <?= $this->session->flashdata('success'); ?>
+                  </div>
+                <?php } ?>
+
+                <div class="pager">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                          <li class="breadcrumb-item"><a href="<?= base_url(); ?>"><?= $this->lang->line('home');?></a></li>
+                          <li class="breadcrumb-item active" aria-current="page"><?= $selectedCategoryName; ?></li> 
+                        </ol>
+                      </nav>
+                </div>
+                <h1 class="page-title"><?= $selectedCategoryName ?></h1>
+                <div class="auction-detail">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                          <a class="nav-link active" 
+                            id="online-tab" 
+                            data-toggle="tab" 
+                            data-auction="online"
+                            href="#online" 
+                            role="tab" 
+                            aria-controls="online" 
+                            aria-selected="true"><?= $this->lang->line('online_auction');?></a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" 
+                            id="live-tab" 
+                            data-toggle="tab" 
+                            data-auction="live"
+                            href="#live" 
+                            role="tab" 
+                            aria-controls="live" 
+                            aria-selected="false"><?= $this->lang->line('live_hall_auction');?></a>
+                        </li>
+                        <?php if(isset($hasClosedAuctions) && ($hasClosedAuctions > 0)){ ?>
+                            <li class="nav-item">
+                              <a class="nav-link" 
+                                id="closed-tab" 
+                                data-toggle="tab"
+                                data-auction="closed" 
+                                href="#closed" 
+                                role="tab" 
+                                aria-controls="closed" 
+                                aria-selected="false"><?= $this->lang->line('close_auction');?></a>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                    <div class="tab-content" id="myTabContent" style="position:relative";>
+                    
+                        <!-- <div class="col-lg-12 row">
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button class="btn active2 btnlstgrdvew" id="grid" style="font-size: 12px;">
+                                        <i class="fa fa-th-large"></i> Grid View
+                                    </button>
+                                    <button class="btn ml-2 btnlstgrdvew" id="list" style="font-size: 12px;">
+                                        <i class="fa fa-bars"></i> List View
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="">
+                             <!--    <div class="btn-group">
+                                    <button class="btn  btnlstgrdvew" id="grid" style="font-size: 20px;padding: 0 4px;background: transparent;color:#ccc">
+                                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="1.24023" width="10" height="10" rx="0.5" stroke="#979797"/>
+<rect x="0.5" y="14.2402" width="10" height="10" rx="0.5" stroke="#979797"/>
+<rect x="13.5" y="1.24023" width="10" height="10" rx="0.5" stroke="#979797"/>
+<rect x="13.5" y="14.2402" width="10" height="10" rx="0.5" stroke="#979797"/>
+</svg>
+
+                                    </button>
+                                    <button class="btn ml-2 btnlstgrdvew" id="list" style="font-size: 20px;padding: 0 4px;background: transparent;color:#ccc">
+                                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0)">
+<path d="M23.0624 11.8027H6.76221C6.24443 11.8027 5.82471 12.2225 5.82471 12.7402C5.82471 13.258 6.24443 13.6777 6.76221 13.6777H23.0624C23.5802 13.6777 23.9999 13.258 23.9999 12.7402C23.9999 12.2225 23.5802 11.8027 23.0624 11.8027Z" fill="#5C02B5"/>
+<path d="M23.0624 4.77148H6.76221C6.24443 4.77148 5.82471 5.1912 5.82471 5.70898C5.82471 6.22677 6.24443 6.64648 6.76221 6.64648H23.0624C23.5802 6.64648 23.9999 6.22677 23.9999 5.70898C23.9999 5.1912 23.5802 4.77148 23.0624 4.77148Z" fill="#5C02B5"/>
+<path d="M23.0624 18.834H6.76221C6.24443 18.834 5.82471 19.2537 5.82471 19.7715C5.82471 20.2893 6.24443 20.709 6.76221 20.709H23.0624C23.5802 20.709 23.9999 20.2893 23.9999 19.7715C23.9999 19.2537 23.5802 18.834 23.0624 18.834Z" fill="#5C02B5"/>
+<path d="M1.26562 6.97461C1.96461 6.97461 2.53125 6.40797 2.53125 5.70898C2.53125 5.01 1.96461 4.44336 1.26562 4.44336C0.56664 4.44336 0 5.01 0 5.70898C0 6.40797 0.56664 6.97461 1.26562 6.97461Z" fill="#5C02B5"/>
+<path d="M1.26562 14.0059C1.96461 14.0059 2.53125 13.4392 2.53125 12.7402C2.53125 12.0412 1.96461 11.4746 1.26562 11.4746C0.56664 11.4746 0 12.0412 0 12.7402C0 13.4392 0.56664 14.0059 1.26562 14.0059Z" fill="#5C02B5"/>
+<path d="M1.26562 21.0371C1.96461 21.0371 2.53125 20.4705 2.53125 19.7715C2.53125 19.0725 1.96461 18.5059 1.26562 18.5059C0.56664 18.5059 0 19.0725 0 19.7715C0 20.4705 0.56664 21.0371 1.26562 21.0371Z" fill="#5C02B5"/>
+</g>
+<defs>
+<clipPath id="clip0">
+<rect width="24" height="24" fill="white" transform="translate(0 0.740234)"/>
+</clipPath>
+</defs>
+</svg>
+
+                                    </button>
+                                    
+                                </div> -->
+                        </div>
+                        <div class="tab-pane fade show active" id="online" role="tabpanel" aria-labelledby="online-tab">
+                            
+                            <div class="online-auction" id="onlineResults">
+    
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="live" role="tabpanel" aria-labelledby="live-tab">
+                            <div class="live-auction" id="liveResults"></div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="closed" role="tabpanel" aria-labelledby="closed-tab">
+                            <div class="online-auction" id="closedResults"></div>
+                        </div>
+                        
+                    </div>
+                    
+                    
+                    
+                </div>
+                
+            </div>
+           
+        </div>
+        
+    </div>
+    
+</div>
+
+<script>
+    var token_name = '<?= $this->security->get_csrf_token_name();?>';
+    var token_value = '<?=$this->security->get_csrf_hash();?>';
+
+    $(document).ready(function(){
+        $("#applyFilter").click();
+
+        var auctionType = 'online';
+        <?php if(isset($_GET['auctionType']) && !empty($_GET['auctionType'])){ ?>
+            auctionType = '<?= $_GET["auctionType"] ?>';
+        <?php } ?>
+        var eTab = $('#myTab a[href="#'+auctionType+'"]');
+        eTab.tab('show');
+    });
+
+    $("#itemMake").on("change", function(event){
+        event.preventDefault();
+        var makeId = $(this).val();
+        var language = "<?= $language; ?>";
+
+        $.ajax({
+            url: "<?= base_url('search/modelsByMake'); ?>",
+            type: 'POST',
+            data: {
+                'makeId':makeId,
+                "<?= $this->security->get_csrf_token_name(); ?>":"<?= $this->security->get_csrf_hash(); ?>"
+            },
+            success: function(response){
+                var models = JSON.parse(response);
+                $('#itemModel').html('');
+                if(models.status){
+                    $("#itemModel").append('<option value="">All Models</option>').selectpicker('refresh');
+                    $.each(models.data, function (idx, obj) {
+                        var modelTitle = JSON.parse(obj.title); 
+                        $("#itemModel").append('<option value="' + obj.id + '">' + modelTitle[language] + '</option>').selectpicker('refresh');
+                    });
+                }
+            }
+        });
+    });
+
+    $('.nav-tabs a').on('shown.bs.tab', function(event){
+        var auctionType = $(event.target).data('auction');
+        getAuctionItems(auctionType);
+    });
+
+    $('#applyFilter').on('click', function(event){
+        event.preventDefault();
+        var auctionType = $('.nav-tabs a.active').data('auction');
+        getAuctionItems(auctionType);
+    });
+
+    function getAuctionItems(auctionType, offset=0){
+        if(!auctionType){return false;}
+
+        var sortBy = $('#sortBy').val();
+        //console.log(sortBy);
+
+        var filters = $('#filtersForm').serializeArray();
+        filters.push({'name':'auctionType', 'value':auctionType});
+        filters.push({'name':'offset','value':offset});
+        filters.push({'name':'sortBy','value':sortBy});
+        //console.log(sortBy);
+
+        $.ajax({
+            method: "POST",
+            url: "<?= base_url('search/Search/getAuctionItems'); ?>",
+            data: filters,
+            beforeSend: function(){
+                //$(".overlay").show();
+            },  
+            success: function(responseData){
+                console.log(responseData);
+                //$(".overlay").hide();
+                var outputPane = '#'+auctionType+'Results';
+                var response = JSON.parse(responseData);
+                if(response.status == 'success'){
+                    $(outputPane).html(response.items);
+                    //$('#sortBy').val(sortBy);
+                }else{
+                    $(outputPane).html("<div class='norecordfound'><img src='/assets_admin/images/comingsoonimg.png' align='center' /><h1 class='no-record'><?= $this->lang->line('no_record'); ?></h1></div>");
+                }
+            }
+        });
+    }
+
+    $(".alert-dismissible").fadeOut(10000);
+
+</script>

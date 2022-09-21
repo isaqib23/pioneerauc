@@ -1,0 +1,20 @@
+
+
+{
+	"sProcessing":   "جاري التحميل...",
+	"sLengthMenu":   "عدد العناصر _MENU_",
+	"sZeroRecords":  "لم يُعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مُدخل",
+	"sInfo":         "إظهار عدد العناصر _START_ إلى _END_ من أصل _TOTAL_ عناصر",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجلّ",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "<span class='material-icons'>keyboard_arrow_left</span>",
+		"sNext":     "<span class='material-icons'>keyboard_arrow_right</span>",
+		"sLast":     "الأخير"
+	}
+}

@@ -1,0 +1,46 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('icomoon.eot?x9xyep');
+  src:  url('icomoon.eot?x9xyep#iefix') format('embedded-opentype'),
+    url('icomoon.ttf?x9xyep') format('truetype'),
+    url('icomoon.woff?x9xyep') format('woff'),
+    url('icomoon.svg?x9xyep#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-time-icon:before {
+  content: "\e905";
+}
+.icon-cart-icon:before {
+  content: "\e900";
+}
+.icon-header-caret-arrow:before {
+  content: "\e901";
+}
+.icon-map-marker:before {
+  content: "\e902";
+  color: #277dbe;
+}
+.icon-phone-icon:before {
+  content: "\e903";
+}
+.icon-search-icon:before {
+  content: "\e904";
+}

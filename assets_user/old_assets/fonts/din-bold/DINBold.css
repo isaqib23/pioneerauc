@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'DINBold';
+    src: url('fonts/DINBold.eot');
+    src: url('fonts/DINBold.eot') format('embedded-opentype'),
+         url('fonts/DINBold.woff2') format('woff2'),
+         url('fonts/DINBold.woff') format('woff'),
+         url('fonts/DINBold.ttf') format('truetype'),
+         url('fonts/DINBold.svg#DINBold') format('svg');
+}
