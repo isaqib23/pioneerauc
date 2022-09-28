@@ -2102,7 +2102,9 @@ class Items extends Loggedin_Controller
          $searchQuery = "";
         if($keyword != ''){
             $search_arr[] = " ( fname like '%".$keyword."%' or username like '%".$keyword."%' or lname like '%".$keyword."%' or mobile like '%".$keyword."%' ) ";
-        }
+        }else{
+			$search_arr[] = " ( fname != '' or username != '' or lname != '' ) ";
+		}
 
         if(count($search_arr) > 0){
             $searchQuery = implode(" AND ",$search_arr);
@@ -2111,6 +2113,7 @@ class Items extends Loggedin_Controller
          $this->db->select('count(*) as allcount');
          $this->db->where('role', 4);
          $records2 = $this->db->get('users')->result();
+
          $totalRecords = $records2[0]->allcount;
 
          ## Total number of record with filtering
@@ -2129,6 +2132,7 @@ class Items extends Loggedin_Controller
         $this->db->order_by($columnName, $columnSortOrder);
         $this->db->limit($rowperpage, $start);
         $users_list = $this->db->get('users')->result_array();
+		//pre($this->db->last_query());
         foreach ($users_list as $key => $value) {
             # code...
 
