@@ -76,10 +76,10 @@
                                      ?>
                                      </td>
                                 <td>
-                                    <ul>
+									<ul>
                                         <?php foreach ($files as $key => $file) { ?>
                                             <li>
-                                                <a style="color: #809fff;" href="<?= base_url().$file['path'].$file['name']; ?>" download target="_blank"> <?= $cat_name; ?> Document - <?= $key + 1; ?>
+                                                <a style="color: #809fff;" href="<?= base_url() ."users/document_preview/".$file['id'] ?>" target="_blank"> <?= $file['name'] ?>
                                                 </a>
                                             </li>
                                         <?php } ?>

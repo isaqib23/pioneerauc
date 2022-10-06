@@ -2512,6 +2512,16 @@ class Users extends Loggedin_Controller {
         }
     }
 
+	public function document_preview($id){
+		$file = $this->db->where('id', $id)->get('files')->row();
+		if(is_null($file)){
+			redirect(base_url());
+		}
+		$data["file_type"] = $file->type;
+		$data["filePath"] = base_url().str_replace("./", "",$file->path).$file->name;
+		$this->template->load_admin('users/documents_preview', $data);
+	}
+
     public function documents()
     {
         $data = array();
