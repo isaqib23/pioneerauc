@@ -4563,7 +4563,7 @@ class Users extends Loggedin_Controller {
                 redirect(base_url('user-deposits-return-form/'.$data['user_id']));
             } else {
 
-                $detail = [];
+                $detail = ["respMessage" => $data["deposit_description"]];
 
                 $deposit_detail = json_encode($detail);
 

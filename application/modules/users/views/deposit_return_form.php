@@ -113,6 +113,19 @@
             </div>
           </div>
 
+
+			<div class="form-group">
+				<label class="control-label col-md-3 col-sm-3 col-xs-12" for="deposit">Return Description <span class="required">*</span></label>
+				<div class="col-md-6 col-sm-6 col-xs-12">
+					<textarea type="text"
+						   name="deposit_description"
+						   id="deposit_description"
+						   placeholder="Enter Description"
+							  class="form-control col-md-7 col-xs-12 parsley-success" ></textarea>
+					<div class="deposit-error text-danger"></div>
+				</div>
+			</div>
+
           <div id="mode_fields"></div>
 
           <div class="ln_solid"></div>
