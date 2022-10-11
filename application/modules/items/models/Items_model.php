@@ -418,7 +418,8 @@ class Items_Model extends CI_Model
             // $this->db->where('item.status', 'active');
         }
         $this->db->order_by('item.id', 'desc');
-        // $this->db->limit(10);
+        $this->db->limit(100);
+		//$this->db->where("created_at >= DATE(NOW()) - INTERVAL 30 DAY");
         $query = $this->db->get();
         // echo $this->db->last_query();
         if ($query->num_rows() > 0) {
