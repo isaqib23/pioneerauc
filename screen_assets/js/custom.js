@@ -16,7 +16,7 @@ var customScript = {
 	  slidesToShow: 1,
 	  slidesToScroll: 1,
 	  autoplay: true,
-	  autoplaySpeed: 1000,
+	  autoplaySpeed: 5000,
 	  pauseOnHover: false,
 	  arrows: false,
 	  fade: true,
