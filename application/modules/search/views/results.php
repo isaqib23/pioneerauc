@@ -541,7 +541,7 @@ if($toDayl == $lessDay || $toDayl == $_curDateTime){
                     //$sold = $this->db->get_where('auction_items',['sold_status' =>'sold'])->result_array();
                     //$bid_end_time = strtotime($auction_item['bid_end_time']);
                     $item_images_ids = explode(',', $auction_item['item_images']);
-                    $images = $this->db->where_in('id', $item_images_ids)->get('files')->result_array();
+                    $images = $this->db->where_in('id', $item_images_ids)->get('files')->order_by("file_order","desc")->result_array();
                     $imagesCount = count($images);
                     if ($images) {
                         $image_src = base_url('uploads/items_documents/') . $auction_item['item_id'] . '/' . $images[0]['name'];

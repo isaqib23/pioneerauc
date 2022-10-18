@@ -402,10 +402,10 @@ class Items extends Loggedin_Controller
                 $base_url_img = base_url('uploads/items_documents/').$item_id.'/'.$file_name;
             }
 
-            $image = '<a class="text-success" href="'.$item_detail_url.'"><img style="width: 37px; height: 36px" class="img-responsive avatar-view" src="'.$base_url_img.'" alt="'.@$item_name->english.'"></a>';
+            $image = '<a class="text-success" href="'.$item_detail_url.'"><img style="width: 37px; height: 36px; max-width: none !important" class="img-responsive avatar-view" src="'.$base_url_img.'" alt="'.@$item_name->english.'"></a>';
         }else{
              $base_url_img =base_url('assets_admin/images/product-default.jpg');
-             $image = '<a class="text-success" href="'.$item_detail_url.'"><img style="width: 37px" class="img-responsive avatar-view" src="'.$base_url_img.'" alt="'.@$item_name->english.'"></a>';
+             $image = '<a class="text-success" href="'.$item_detail_url.'"><img style="width: 37px; max-width: none !important" class="img-responsive avatar-view" src="'.$base_url_img.'" alt="'.@$item_name->english.'"></a>';
         }
         $action = '';
 

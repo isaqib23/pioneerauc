@@ -399,6 +399,16 @@
 <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=<?= $this->config->item('google_geolocation_key'); ?>&callback=initMap" async defer></script>
 <script>
 
+	$('#make').on('change', function() {
+		var optionSelected = $(this).find("option:selected");
+		$("#name").val(optionSelected.text())
+	});
+
+	$('#model').on('change', function() {
+		var makeSelected = $("#make").find("option:selected");
+		var optionSelected = $(this).find("option:selected");
+		$("#name").val(makeSelected.text()+" "+optionSelected.text())
+	});
   // Call Geo Complete
  // $("#location").geocomplete({details:"form#demo-form2"});
 
@@ -849,7 +859,9 @@ $(document).ready(function(){
                     // $('.make_case').show();
                     $('#model').attr('disabled',false);
                     $('#model').html(objdata.data);
-
+					var optionSelected = $("#make").find("option:selected");
+					var modelSelected = $("#model").find("option:selected");
+					$("#name").val(optionSelected.text()+" "+modelSelected.text())
                 }
                 else
                 {
