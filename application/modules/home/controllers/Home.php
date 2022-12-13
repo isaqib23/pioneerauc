@@ -311,8 +311,8 @@ class Home extends MY_Controller {
 				// echo json_encode(array('error' => false,'msg' => $sms_response));
 				//     exit();
 				//if(isset($sms_response->MessageID)){
-
-				if ($sms_response == 'Sent.') {
+				$isUAENumber = substr($number, 0, 3);
+				if ($sms_response == 'Sent.' || $isUAENumber == "971") {
 					$this->db->insert('sms_history', ['ip_address' => $this->input->ip_address(), 'created_on' => date('Y-m-d H:i:s')]);
 					//$sms_response = json_encode($sms_response);
 
