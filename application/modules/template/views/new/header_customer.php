@@ -49,10 +49,7 @@
             height:60px!important;
         }
 
-        button.close
-        {
-            display:none;
-        }
+        
 
 
     }
