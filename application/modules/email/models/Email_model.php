@@ -143,9 +143,9 @@ class Email_model extends CI_Model
             $this->email->subject($subject);
             $this->email->message($email_message);
             $send = $this->email->send();
-            //return $send;
-            var_dump($send);
-            return $this->email->print_debugger();
+            return $send;
+            //var_dump($send);
+            // return $this->email->print_debugger();
             // $is_send = $this->email->to($email)->subject($notification)->message($email_message)->send();
             // print_r($send);die();
             //return ($send) ? 'true' : 'false';
