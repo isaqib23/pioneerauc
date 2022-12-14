@@ -3,12 +3,12 @@
 $config['useragent']        = 'CodeIgniter';              // Mail engine switcher: 'CodeIgniter' or 'PHPMailer'
 $config['protocol']         = 'smtp';                   // 'mail', 'sendmail', or 'smtp'
 $config['mailpath']         = '/usr/sbin/sendmail';
-$config['smtp_host']        = 'smtp.office365.com';
+$config['smtp_host']        = 'gator3220.hostgator.com';
 $config['smtp_auth']        = false;                     // Whether to use SMTP authentication, boolean TRUE/FALSE. If this option is omited or if it is NULL, then SMTP authentication is used when both $config['smtp_user'] and $config['smtp_pass'] are non-empty strings.
 $config['smtp_user']        = "donotreply@pioneerauctions.ae";
 $config['from_email']        = "donotreply@pioneerauctions.ae";
-$config['smtp_pass']        = 'Engineer@1591';
-$config['smtp_port']        = 587;
+$config['smtp_pass']        = 'Engineer@15';
+$config['smtp_port']        = 465;
 $config['smtp_timeout']     = 30;                       // (in seconds)
 $config['smtp_crypto']      = 'tls';                       // '' or 'tls' or 'ssl'
 $config['smtp_debug']       = 1;                        // PHPMailer's SMTP debug info level: 0 = off, 1 = commands, 2 = commands and data, 3 = as 2 plus connection status, 4 = low level data output.

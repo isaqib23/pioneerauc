@@ -6,6 +6,7 @@
                     </th>
                     <th>Name</th>
                     <th>Auction Type</th>
+					<th>Auction Code</th>
                     <th>Auction Category</th>
                     <th>Start Date</th>
                     <th>Expiry Date</th>
@@ -43,6 +44,7 @@
                         </td>
                         <td><?php $title= json_decode($value['title']); echo $title->english; ?></td>
                         <td><?php echo (isset($value['access_type']) && !empty($value['access_type'])) ? $value['access_type'] : ''; ?></td>
+						<td><?php echo (isset($value['registration_no']) && !empty($value['registration_no'])) ? $value['registration_no'] : ''; ?></td>
                         <td><?php $auctionInfoo = json_decode($value['category_name']); echo (isset($value['category_name']) && !empty($value['category_name'])) ? $auctionInfoo->english : ''; ?></td>
                         <td><?php echo (isset($value['start_time']) && !empty($value['start_time'])) ? $value['start_time'] : ''; ?></td>
                         <td><?php echo (isset($value['expiry_time']) && !empty($value['expiry_time'])) ? $value['expiry_time'] : ''; ?></td>
