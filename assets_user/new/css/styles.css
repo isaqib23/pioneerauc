@@ -6798,3 +6798,7 @@ header {
         left: 17px;
     } */
 }
+#imgModal .show-img, #imgModal .detail-slider {
+	padding: 0px !important;
+	margin: 0px !important;
+}
