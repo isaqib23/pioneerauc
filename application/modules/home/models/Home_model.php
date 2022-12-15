@@ -27,6 +27,24 @@ class Home_model extends CI_Model
     return $online_auctions;
   }
 
+	public function get_active_auction_categories_for_header()
+	{
+		$where_condition = [
+			'status' => 'active',
+			'show_web' => 'yes'
+		];
+
+		$online_auctions = $this->db->select('*')
+			->from('item_category')
+			->where($where_condition)
+			->where('id !=' , 1)
+			->order_by('sort_order', 'ASC')
+			->limit(9, 0)
+			->get()->result_array();
+
+		return $online_auctions;
+	}
+
   public function get_online_auctions($category_id='')
   {
     $where_condition = [

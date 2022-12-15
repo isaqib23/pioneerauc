@@ -599,7 +599,7 @@
         </div>
     </header>
     <?php
-    $active_auction_categories_header = $this->home_model->get_active_auction_categories();
+    $active_auction_categories_header = $this->home_model->get_active_auction_categories_for_header();
     foreach ($active_auction_categories_header as $key => $value) {
         $count = 0;
         $auctions_online = $this->home_model->get_online_auctions($value['id']);
