@@ -360,7 +360,7 @@ $lang['dubai'] = 'Dubai';
 $lang['date'] = 'Date';
 $lang['date_cap'] = 'DATE';
 $lang['print_c'] = 'Print Catalogue';
-$lang['open_live'] = 'Open LiveBid';
+$lang['open_live'] = 'Open Live Bid';
 $lang['specs_s'] = 'Specs';
 
 ///deposit page for payment

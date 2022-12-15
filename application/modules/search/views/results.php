@@ -517,11 +517,11 @@ if($toDayl == $lessDay || $toDayl == $_curDateTime){
         </div>
     </div>
     <div class="container" style="margin-top:20px;">
-        <!--  <div class="pagination d-flex align-items-center justify-content-end">
+          <div class="pagination d-flex align-items-center justify-content-end">
       <nav aria-label="Page navigation">
          <?= $paginationLinks; ?>
       </nav>
-   </div> -->
+   </div>
         <div id="products" class="productstb">
 
             <div class="row">
