@@ -19,6 +19,7 @@ class Home_model extends CI_Model
     $online_auctions = $this->db->select('*')
       ->from('item_category')
       ->where($where_condition)
+	  ->where('id !=' , 1)
       ->order_by('sort_order', 'ASC')
       ->limit(9, 0)
       ->get()->result_array();
