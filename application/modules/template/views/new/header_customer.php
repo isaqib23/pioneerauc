@@ -80,7 +80,7 @@ $language = $this->session->userdata('site_lang');
 if($language == 'arabic'){
 ?>
 <style>
-	.rtl .mobile-menu sidenav .account-links .lang-dropdown {
+	.rtl .mobile-menu .account-links .lang-dropdown {
 		margin-left: 160px !important;
 	}
 </style>
