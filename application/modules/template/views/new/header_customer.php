@@ -74,6 +74,17 @@
 
 
 </style>
+<?php
+if($this->session->userdata('site_lang')){
+$language = $this->session->userdata('site_lang');
+if($language == 'arabic'){
+?>
+<style>
+	.rtl .account-links .lang-dropdown {
+		margin-left: 160px !important;
+	}
+</style>
+<?php } } ?>
 <div class="header-wrapper">
     <?php
     $contact_us_info = $this->db->get('contact_us')->row_array();
