@@ -226,7 +226,7 @@
                     <thead>
                         <th width="24%"><?= $this->lang->line('name_new')?></th>
                         <th class="item-arrow" width="30%"><?= $this->lang->line('items')?></th>
-                        <th class="hide-on-768" width="18%"><?= $this->lang->line('created_on_new')?></th>
+                        <th class="" width="18%"><?= $this->lang->line('created_on_new')?></th>
                     </thead>
                     <tbody>
                         <?php 
@@ -256,7 +256,7 @@
                                                 }
                                                 ?>
                                         </td>
-                                        <td class="hide-on-768">
+                                        <td class="">
                                             <?php 
                                             $docCreated = strtotime($doc['created_on']);
                                             if($language == 'arabic'){

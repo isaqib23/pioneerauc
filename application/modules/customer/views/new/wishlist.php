@@ -17,7 +17,7 @@
                         <th class="name" class="pl-0" width="30%"><?= $this->lang->line('name_of_item')?></th>
                      
                         <th class="status" width="20%"><?= $this->lang->line('status_new')?></th>
-                        <th class="action hide-on-768" width="20%"><?= $this->lang->line('action_new')?></th>
+                        <th class="action " width="20%"><?= $this->lang->line('action_new')?></th>
                     </thead>
                     <tbody>
                         <?php foreach ($favoriteItems as $key => $value) : 
@@ -34,9 +34,9 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <!-- <td class="hide-on-768"><?= json_decode($value['detail'])->$language; ?></td> -->
+                                    <!-- <td class=""><?= json_decode($value['detail'])->$language; ?></td> -->
                                     <td><?= $value['auction_item_status']; ?></td>
-                                    <td class="hide-on-768"><?= $value['action']; ?></td>
+                                    <td class=""><?= $value['action']; ?></td>
                                 </tr>
                             <?php endif; ?>
                         <?php endforeach; ?>

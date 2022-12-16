@@ -17,18 +17,18 @@
         <h4 class="border-title"><?= $this->lang->line('my_bids_new')?></h4>
         <table class="customtable datatable  table-responsive" id="bidDatatable" cellpadding="0" cellspacing="0" >
             <thead>
-                <th class="# hide-on-768">#</th>
-                <th class="bid_time hide-on-768" width="24%" data-orderable="false"><?= $this->lang->line('bid_time')?></th>
+                <th class="# ">#</th>
+                <th class="bid_time " width="24%" data-orderable="false"><?= $this->lang->line('bid_time')?></th>
                 <th class="name" width="38%"><?= $this->lang->line('name_of_item')?></th>
-                <th class="bid_amount hide-on-768"><?= $this->lang->line('your_bid_new')?></th>
-                <th class="last_bid hide-on-768"><?= $this->lang->line('last_bid');?></th>
+                <th class="bid_amount "><?= $this->lang->line('your_bid_new')?></th>
+                <th class="last_bid "><?= $this->lang->line('last_bid');?></th>
                 <th class="status" width="18%"><?= $this->lang->line('status_new')?></th>
             </thead>
             <tbody>
                 <?php $j = 0; foreach ($bids_data as $key => $bid) : $j++; ?>
                   <tr>
-                    <td class="hide-on-768"><?= $j; ?></td>
-                    <td class="hide-on-768">
+                    <td class=""><?= $j; ?></td>
+                    <td class="">
                         <p class="date-time"><span style="margin-right: 0px;">
                         <?php 
                         $bidTime = strtotime($bid['bid_time']);
@@ -55,8 +55,8 @@
                         </div>
                       </div>
                     </td>
-                    <td class="hide-on-768"><?= number_format($bid['bid_amount']); ?></td>
-                    <td class="hide-on-768"><?= number_format($bid['last_bid']); ?></td>
+                    <td class=""><?= number_format($bid['bid_amount']); ?></td>
+                    <td class=""><?= number_format($bid['last_bid']); ?></td>
                     <td class=""><?= $bid['status_value']; ?></td>
                   </tr>
                 <?php endforeach; ?>
