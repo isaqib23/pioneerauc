@@ -639,11 +639,31 @@ $myear = date("Y", strtotime($item['bid_end_time']));
                         $customClass = 'mb-4';
                     } ?>
                     <ul class="detail-icons <?= $customClass; ?> ">
+						<?php
+						$reportUrl = "";
+						if (!empty($item['item_test_report']) || $item['item_test_report'] !='' ) {
+							$test_report_ids = explode(',', $item['item_test_report']);
+							$item_test_report = $this->db->where_in('id', $test_report_ids)->get_where('files')->result_array();
+							foreach ($item_test_report as $key1 => $document) {
+								if($key1 == 0) {
+									$reportUrl = base_url() . $document['path'] . $document['name'];
+								}
+							}
+						}
+						?>
                         <?php if (($category['include_make_model'] == 'yes') && isset($item['mileage'])) : ?>
                             <li>
-                                <h4><?= $this->lang->line('report'); ?></h4>
-                                <img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/driving-test-icons.svg">
-                                <p><?= ($item['inspected'] == 'yes') ? $this->lang->line('available') : $this->lang->line('not_available'); ?></p>
+								<?php if($reportUrl == ""){ ?>
+									<h4><?= $this->lang->line('report'); ?></h4>
+									<img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/driving-test-icons.svg">
+									<p><?= ($item['inspected']=='yes')?$this->lang->line('available'):$this->lang->line('not_available');?></p>
+								<?php } else{ ?>
+									<a href="<?=$reportUrl?>" style="cursor: pointer">
+										<h4><?= $this->lang->line('report'); ?></h4>
+										<img src="<?= NEW_ASSETS_USER; ?>/new/images/detail-icons/driving-test-icons.svg">
+										<p><?= ($item['inspected']=='yes')?$this->lang->line('available'):$this->lang->line('not_available');?></p>
+									</a>
+								<?php } ?>
                             </li>
                         <?php endif; ?>
                         <?php if (($category['include_make_model'] == 'yes')) : ?>
