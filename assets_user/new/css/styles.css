@@ -6802,3 +6802,6 @@ header {
 	padding: 0px !important;
 	margin: 0px !important;
 }
+.slick-slide .footer a {
+	color: #5c02b5 !important;
+}

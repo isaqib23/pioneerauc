@@ -57,7 +57,7 @@
         <div class="container">
             <div class="links-wrapper">
                 <?php
-                $itemCategories = $this->db->where('show_web', 'yes')->where('status', 'active')->order_by('sort_order', 'ASC')->get('item_category')->result_array();
+                $itemCategories = $this->db->where('show_web', 'yes')->where('status', 'active')->where('id !=' , 1)->order_by('sort_order', 'ASC')->get('item_category')->result_array();
                 foreach ($itemCategories as $key => $itemCategory) {
                     $categoryTitle = json_decode($itemCategory['title']);
                     $itemSubCat = $this->db->get_where('item_subcategories', ['category_id' => $itemCategory['id']])->result_array();
