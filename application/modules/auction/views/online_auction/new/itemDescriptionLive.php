@@ -149,7 +149,6 @@ $myear = date("Y", strtotime($auction_details['start_time']));
                     <ul class="detail-icons">
 
 						<?php
-						pre($item);exit;
 						$reportUrl = "";
 						if (!empty($item['item_test_report']) || $item['item_test_report'] !='' ) {
 							$test_report_ids = explode(',', $item['item_test_report']);
