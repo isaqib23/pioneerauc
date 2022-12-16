@@ -5497,6 +5497,9 @@ strong {
     .your-bid label {
         font-size: 14px;
     }
+	.file > label {
+		width: 70% !important;
+	}
 }
 
 @media screen and (max-width: 1000px) {
