@@ -31,7 +31,21 @@ function get_lang_base_text($language , $_iTxt, $_iPrice){
    .auction-desc-heading-down{
     white-space: pre-wrap !important;
    }
-</style><div class="main-wrapper">
+</style>
+<?php
+if($this->session->userdata('site_lang')){
+$language = $this->session->userdata('site_lang');
+if($language == 'arabic'){ ?>
+<style>
+	.our-bids .products .viewallbtns a {
+		text-align: left !important;
+	}
+</style>
+<?php
+}
+}
+?>
+<div class="main-wrapper">
     <div class="home-banner position-relative">
         <div class="slider">
             <?php 
