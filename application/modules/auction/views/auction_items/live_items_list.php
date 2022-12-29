@@ -121,6 +121,9 @@
         <div class="x_content">
             <br>
             <hr>
+			<?php if(!empty($items_list)){?>
+			<a href="#" data-toggle="modal" data-target="#lootingModal" class="btn btn-primary">Bulk Looting</a>
+			<?php } ?>
             <button onclick="deleteRecord_Bulk(this)" style="display: none;" id="delete_bulk" type="button" data-obj="item_category" data-url="<?php echo base_url(); ?>items/delete_bulk" class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-trash"></i> Delete Selected Rows</button>
         </div>
 
@@ -235,6 +238,50 @@
         </div>
       </div>
 
+		<div class="modal fade bs-example-modal-sm_blink" tabindex="-1" role="dialog" aria-hidden="true" id="lootingModal">
+	<div class="modal-dialog modal-lg" style="max-width:750px; ">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close inner_blink_model" title="close"><span aria-hidden="true">×</span>
+				</button>
+				<h4 class="modal-title" id="Looting">Bulk Looting</h4>
+			</div>
+			<div class="modal-body_blinking">
+				<form style="text-align: center" method="post" id="lootingForm">
+					<table class="table table-bordered" style="width: 80%; margin: 0 auto">
+						<thead>
+							<tr>
+								<th>Sr. #</th>
+								<th>Name</th>
+								<th>Lot #</th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php if(!empty($items_list)){
+							foreach ($items_list as $key => $val){
+							?>
+							<tr style="text-align: left">
+								<td><?= $key+1 ?></td>
+								<td>
+									<div>
+										<?=$val["thumb_nail"]?>
+										<span><?=$val["itemName"]?></span>
+									</div>
+								</td>
+								<input type="hidden" name="auction" value="<?=$auction_id?>">
+								<input type="hidden" name="item[]" value="<?=$val["id"]?>">
+								<td><input type="text" name="lot[]" value="<?=$val["order_lot_no"]?>"></td>
+							</tr>
+						<?php }} ?>
+						</tbody>
+					</table>
+					<button type="submit" id="lootingBtn" class="btn btn-success btn-lg" style="margin-top: 20px; margin-bottom: 20px;"> Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
        <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width:750px; ">
           <div class="modal-content">
@@ -286,6 +333,22 @@
 <script type="text/javascript">
   var token_name = '<?= $this->security->get_csrf_token_name();?>';
   var token_value = '<?=$this->security->get_csrf_hash();?>';
+
+  $("#lootingForm").submit(function(event) {
+
+	  event.preventDefault();
+	  var formData = $(this).serialize();
+	  var url = '<?php echo base_url();?>';
+	  $.ajax({
+		  type: 'post',
+		  url: url + 'auction/update_bulk_lotting',
+		  data: formData,
+		  success: function (response) {
+			  console.log(JSON.parse(response));
+		  }
+	  });
+
+  });
 
   $('#datefrom').datetimepicker({
       format: 'YYYY-MM-DD'

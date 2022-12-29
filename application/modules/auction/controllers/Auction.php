@@ -3861,6 +3861,43 @@ class Auction extends Loggedin_Controller
         $data['customer_type_list'] = $this->crm_model->customer_type_list_active();
         $data['seller_list'] = $this->users_model->get_all_sales_user();
         $data['application_user_list'] = $this->users_model->get_application_users();
+		if(count($data['items_list']) > 0){
+			foreach ($data['items_list'] as $key => $val){
+				$item_id = $val["id"];
+				$images_ids = explode(",",$val["item_images"]);
+				$item_detail_url =  base_url('auction/details/').$item_id.'/'.$auction_id;
+				$item_name = json_decode($val["name"]);
+				$files_array = $this->files_model->get_multiple_files_by_ids_orders($images_ids);
+				if(isset($files_array[0]['name']) && !empty($files_array[0]['name'])){
+					$file_name = $files_array[0]['name'];
+					// $base_url_img = base_url('uploads/items_documents/').$item_id.'/37x36_'.$file_name;
+					$urlImg = base_url('uploads/items_documents/').$item_id.'/37x36_'.$file_name;
+					if(file_exists($urlImg)){
+						$base_url_img = $urlImg;
+					}else{
+						$base_url_img = base_url('uploads/items_documents/').$item_id.'/'.$file_name;
+					}
+
+					$image = '<a class="text-success" href="'.$item_detail_url.'"><img style="max-width: 50px; display: inline-block;" class="img-responsive avatar-view" src="'.$base_url_img.'" alt="'.$item_name->english.'"></a>';
+				}else{
+					$base_url_img =base_url('assets_admin/images/product-default.jpg');
+					$image = '<a class="text-success" href="'.$item_detail_url.'"><img style="max-width: 50px; display: inline-block;" class="img-responsive avatar-view" src="'.$base_url_img.'" alt="'.$item_name->english.'"></a>';
+				}
+
+				$data['items_list'][$key]["thumb_nail"] = $image;
+				$data['items_list'][$key]["itemName"] = ucwords($item_name->english);
+				$this->db->select("*");
+				$this->db->from("auction_items");
+				$this->db->where("auction_id", $auction_id);
+				$this->db->where("item_id", $val["id"]);
+				$query = $this->db->get();
+				if ($query->num_rows() > 0){
+					$data['items_list'][$key]["order_lot_no"] = $query->row()->order_lot_no;
+				}else{
+					$data['items_list'][$key]["order_lot_no"] = "";
+				}
+			}
+		}
         $this->template->load_admin('auction/auction_items/live_items_list', $data);
     }
 
@@ -4982,4 +5019,20 @@ class Auction extends Loggedin_Controller
         return $response;
 
     }
+
+	public function update_bulk_lotting()
+	{
+		$data = array_combine($_POST["item"],$_POST["lot"]);
+		foreach ($data as $key => $val){
+			$postData = array(
+				'order_lot_no'      => $val
+			);
+			$this->db->where('auction_id', $_POST["auction"]);
+			$this->db->where('item_id', $key);
+			$this->db->update('auction_items', $postData);
+		}
+
+		echo json_encode(array('msg' => "Success", 'error' => ""));
+		exit();
+	}
 }
