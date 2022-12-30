@@ -69,6 +69,10 @@ $(document).ready(function()
                             <textarea class="form-control" placeholder="<?= $this->lang->line('write_your_msg_here');?>..." name="text"></textarea>
                             <span class="text-error text-danger"></span>
                         </div>
+						<div class="col-sm-12">
+							<div style="width: 302px;" id="recaptcha1" class="g-recaptcha" data-sitekey="<?= $this->config->item('captcha_key');?>" data-expired-callback="recaptchaExpired">
+							</div>
+						</div>
                         <div class="button-row">
                             <button type="submit" class="btn btn-primary sub_btn" id="sub_btn"><?=$this->lang->line('submit');?></button>
                         </div>
@@ -134,7 +138,26 @@ $(document).ready(function()
     <!-- Notify JS Files -->
 <script src="<?php echo base_url(); ?>assets_admin/vendors/pnotify/dist/pnotify.js"></script>
 <script>
+	// Recaptcha Code
+	function enableBtn1(){
+		document.getElementById("sub_btn").disabled = false;
+	}
+	var recaptcha1;
+	var myCallBack = function() {
+		recaptcha1 = grecaptcha.render('recaptcha1', {
+			'sitekey' : '<?= $this->config->item('captcha_key');?>',
+			'theme' : 'light', // can also be dark
+			'callback' : 'enableBtn1' // function to call when successful verification for button 1
+		});
+	};
+	function recaptchaExpired(){
+		document.getElementById("sub_btn").disabled = true;
+	}
 
+	// Login button code
+	jQuery(document).ready(function ($) {
+		document.getElementById("sub_btn").disabled = true;
+	});
 // function initialize() {
 //     var lat = "<?php echo $contact_us_info['lat']; ?>";
 //     var lng = "<?php echo $contact_us_info['lng']; ?>";
