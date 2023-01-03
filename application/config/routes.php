@@ -91,7 +91,6 @@ $route['user/forgot'] = 'user/user/forgot_password_form';
 $route['login/jobcard/forgot'] = 'user/user/jobcard_forgot_password_form';
 $route['auction/items/(:any)'] = 'auction/view_auction_items/$1';
 $route['auction/liveitems/(:any)'] = 'auction/view_live_auction_items/$1';
-$route['auctions/update_bulk_lotting'] = 'auction/update_bulk_lotting';
 $route['items/details/(:any)'] = 'items/item_detail/$1';
 $route['auction/details/(:any)/(:any)'] = 'auction/item_detail/$1/$2';
 $route['auction/livedetails/(:any)/(:any)'] = 'auction/live_item_detail/$1/$2';
