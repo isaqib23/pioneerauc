@@ -248,6 +248,7 @@
 			</div>
 			<div class="modal-body_blinking">
 				<form style="text-align: center" method="post" id="lootingForm">
+					<input type="hidden" name="<?= $this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
 					<table class="table table-bordered" style="width: 80%; margin: 0 auto">
 						<thead>
 							<tr>
