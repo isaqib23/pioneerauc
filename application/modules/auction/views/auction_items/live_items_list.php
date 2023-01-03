@@ -342,7 +342,7 @@
 	  $("#lootingBtn").attr("disabled","disabled");
 	  $.ajax({
 		  type: 'post',
-		  url: url + 'auction/update_bulk_lotting',
+		  url: url + 'auctions/update_bulk_lotting',
 		  data: formData,
 		  success: function (response) {
 			  location.reload();
