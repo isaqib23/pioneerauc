@@ -122,7 +122,7 @@
             <br>
             <hr>
 			<?php if(!empty($items_list)){?>
-			<a id="lootModla" disabled="disabled" href="#" data-toggle="modal" data-target="#lootingModal" class="btn btn-primary">Bulk Looting</a>
+			<a href="#" data-toggle="modal" data-target="#lootingModal" class="btn btn-primary">Bulk Looting</a>
 			<?php } ?>
             <button onclick="deleteRecord_Bulk(this)" style="display: none;" id="delete_bulk" type="button" data-obj="item_category" data-url="<?php echo base_url(); ?>items/delete_bulk" class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-trash"></i> Delete Selected Rows</button>
         </div>
