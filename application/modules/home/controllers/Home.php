@@ -306,13 +306,16 @@ class Home extends MY_Controller {
 				// $number = '971561387755';
 
 				$number2 = '971561387755';
-				$sms_response = $this->sendsmart->sms($number, $sms);
+				$isUAENumber = substr($number, 0, 3);
+				$sms_response = 'Sent.';
+				if ($isUAENumber != "971") {
+					$sms_response = $this->sendsmart->sms($number, $sms);
+				}
 				//$sms_response = $this->testunifonic->sendMessage($number, $sms);
 				// echo json_encode(array('error' => false,'msg' => $sms_response));
 				//     exit();
 				//if(isset($sms_response->MessageID)){
-				$isUAENumber = substr($number, 0, 3);
-				if ($sms_response == 'Sent.' || $isUAENumber != "971") {
+				if ($sms_response == 'Sent.') {
 					$this->db->insert('sms_history', ['ip_address' => $this->input->ip_address(), 'created_on' => date('Y-m-d H:i:s')]);
 					//$sms_response = json_encode($sms_response);
 
